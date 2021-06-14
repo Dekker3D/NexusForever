@@ -239,14 +239,12 @@ namespace NexusForever.Database.Character
         /// <summary>
         /// Used by the Global Contact Manager to get the next unique ID.
         /// </summary>
-        public ulong GetNextContactId()
+        public ulong? GetNextContactId()
         {
             using var context = new CharacterContext(config);
 
             return context.CharacterContact
-                .GroupBy(i => 1)
-                .Select(g => g.Max(s => s.OwnerId))
-                .ToList()[0];
+                .FirstOrDefault()?.ContactId;
         }
 
         public async Task<List<CharacterContactModel>> GetPendingContactRequests(ulong characterId)
