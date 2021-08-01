@@ -1753,6 +1753,43 @@ namespace NexusForever.Database.Character
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__residence_plot_id__residence_id");
             });
+
+            modelBuilder.Entity<ResidenceContactModel>(entity =>
+            {
+                entity.ToTable("residence_contact");
+
+                entity.HasKey(e => new { e.Id, e.ResidenceId, e.ContactId })
+                    .HasName("PRIMARY");
+
+                entity.HasIndex(e => e.Id)
+                    .HasDatabaseName("contactGuid")
+                    .IsUnique();
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.ResidenceId)
+                    .HasColumnName("ownerId")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.ContactId)
+                    .HasColumnName("contactId")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasColumnType("int(3) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.HasOne(d => d.Residence)
+                    .WithMany(p => p.Contacts)
+                    .HasForeignKey(d => d.ResidenceId)
+                    .HasConstraintName("FK__residence_contact_id__residence_id");
+            });
         }
     }
 }

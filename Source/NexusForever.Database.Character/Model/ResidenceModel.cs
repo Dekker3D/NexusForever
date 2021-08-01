@@ -24,5 +24,6 @@ namespace NexusForever.Database.Character.Model
         public CharacterModel Character { get; set; }
         public ICollection<ResidenceDecor> Decor { get; set; } = new HashSet<ResidenceDecor>();
         public ICollection<ResidencePlotModel> Plot { get; set; } = new HashSet<ResidencePlotModel>();
+        public ICollection<ResidenceContactModel> Contacts { get; set; } = new HashSet<ResidenceContactModel>();
     }
 }
