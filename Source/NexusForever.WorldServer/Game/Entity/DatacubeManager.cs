@@ -17,7 +17,7 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         private readonly Player player;
-        private readonly Dictionary<uint, Datacube> datacubes = new Dictionary<uint, Datacube>();
+        private readonly Dictionary<uint, Datacube> datacubes = new();
 
         /// <summary>
         /// Create a new <see cref="DatacubeManager"/> from an existing database model.
@@ -75,6 +75,26 @@ namespace NexusForever.WorldServer.Game.Entity
             datacubes.Add(DatacubeHash(id, DatacubeType.Journal), datacube);
 
             SendDatacubeVolume(datacube);
+        }
+
+        /// <summary>
+        /// Unlock all lore entries.
+        /// </summary>
+        public void UnlockAllLore()
+        {
+            datacubes.Clear();
+            foreach (var entry in GameTableManager.Instance.DatacubeVolume.Entries)
+            {
+                var datacube = new Datacube((ushort) entry.Id, DatacubeType.Journal, uint.MaxValue);
+                datacubes.Add(DatacubeHash((ushort)entry.Id, DatacubeType.Journal), datacube);
+            }
+            foreach (var entry in GameTableManager.Instance.Datacube.Entries)
+            {
+                var datacube = new Datacube((ushort)entry.Id, DatacubeType.Datacube, uint.MaxValue);
+                datacubes.Add(DatacubeHash((ushort)entry.Id, DatacubeType.Datacube), datacube);
+            }
+
+            SendInitialPackets();
         }
 
         public void SendInitialPackets()

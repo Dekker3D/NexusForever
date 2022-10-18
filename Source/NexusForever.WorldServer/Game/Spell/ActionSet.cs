@@ -40,8 +40,8 @@ namespace NexusForever.WorldServer.Game.Spell
         /// </summary>
         public IEnumerable<ActionSetAmp> Amps => amps.Values.Where(a => !a.PendingDelete);
 
-        private readonly Dictionary<UILocation, ActionSetShortcut> actions = new Dictionary<UILocation, ActionSetShortcut>();
-        private readonly Dictionary<ushort, ActionSetAmp> amps = new Dictionary<ushort, ActionSetAmp>();
+        private readonly Dictionary<UILocation, ActionSetShortcut> actions = new();
+        private readonly Dictionary<ushort, ActionSetAmp> amps = new();
 
         private ActionSetSaveMask saveMask;
 
@@ -61,7 +61,7 @@ namespace NexusForever.WorldServer.Game.Spell
             if (saveMask == ActionSetSaveMask.None)
                 return;
 
-            if ((saveMask & ActionSetSaveMask.ActionSetAmps) != 0)
+            /*if ((saveMask & ActionSetSaveMask.ActionSetAmps) != 0)
             {
                 foreach ((ushort id, ActionSetAmp amp) in amps.OrderBy(i => i.Value.PendingDelete == true).ToList())
                 {
@@ -70,7 +70,7 @@ namespace NexusForever.WorldServer.Game.Spell
 
                     amp.Save(context);
                 }
-            }
+            }*/
 
             if ((saveMask & ActionSetSaveMask.ActionSetActions) != 0)
             {

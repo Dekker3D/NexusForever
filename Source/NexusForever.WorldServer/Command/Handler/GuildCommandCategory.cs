@@ -35,7 +35,7 @@ namespace NexusForever.WorldServer.Command.Handler
             // default standard from the client
             GuildStandard standard = null;
             if (type == GuildType.Guild)
-                standard = new GuildStandard(3, 4, 6);
+                standard = new GuildStandard(4, 5, 6);
 
             GuildResultInfo info = player.GuildManager.CanRegisterGuild(type, name, leaderRank, councilRank, memberRank, standard);
             if (info.Result != GuildResult.Success)
@@ -49,11 +49,14 @@ namespace NexusForever.WorldServer.Command.Handler
 
         [Command(Permission.GuildJoin, "Join an existing guild.", "join")]
         public void HandleGuildJoin(ICommandContext context,
+            [Parameter("Type of guild to join.", ParameterFlags.None, typeof(EnumParameterConverter<GuildType>))]
+            GuildType type,
             [Parameter("Name of guild to join.")]
             string name)
         {
             Player player = context.Invoker as Player;
-            ulong guildId = GlobalGuildManager.Instance.GetGuild(name)?.Id ?? 0;
+
+            ulong guildId = GlobalGuildManager.Instance.GetGuild(type, name)?.Id ?? 0;
 
             GuildResultInfo info = player.GuildManager.CanJoinGuild(guildId);
             if (info.Result != GuildResult.Success)

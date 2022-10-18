@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Text;
 using NexusForever.WorldServer.Command.Context;
 using NexusForever.WorldServer.Command.Convert;
 using NexusForever.WorldServer.Command.Static;
@@ -7,6 +8,8 @@ using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Quest;
 using NexusForever.WorldServer.Game.Quest.Static;
 using NexusForever.WorldServer.Game.RBAC.Static;
+using NexusForever.WorldServer.Game.Social;
+using NexusForever.WorldServer.Game.Social.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -14,6 +17,25 @@ namespace NexusForever.WorldServer.Command.Handler
     [CommandTarget(typeof(Player))]
     public class QuestCommandCategory : CommandCategory
     {
+        [Command(Permission.QuestList, "List all active quests.", "list")]
+        public void HandleQuestList(ICommandContext context)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine($"Active quests for {context.GetTargetOrInvoker<Player>().Name}");
+            builder.AppendLine("=============================");
+            context.SendMessage(builder.ToString());
+            foreach (Quest quest in context.GetTargetOrInvoker<Player>().QuestManager.GetActiveQuests())
+            {
+                var chatBuilder = new ChatMessageBuilder
+                {
+                    Type = ChatChannelType.System,
+                    Text = $"({quest.Id}) "
+                };
+                chatBuilder.AppendQuest(quest.Id);
+                context.GetTargetOrInvoker<Player>().Session.EnqueueMessageEncrypted(chatBuilder.Build());
+            }
+        }
+
         [Command(Permission.QuestAdd, "Add a new quest to character.", "add")]
         public void HandleQuestAdd(ICommandContext context,
             [Parameter("Quest entry id to add to character.")]
@@ -26,7 +48,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            context.GetTargetOrInvoker<Player>().QuestManager.QuestAdd(info);
+            context.InvokingPlayer.QuestManager.QuestAdd(info);
         }
 
         [Command(Permission.QuestAchieve, "Achieve an existing quest by completing all objectives for character.", "achieve")]
@@ -41,7 +63,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            context.GetTargetOrInvoker<Player>().QuestManager.QuestAchieve(questId);
+            context.InvokingPlayer.QuestManager.QuestAchieve(questId);
         }
 
         [Command(Permission.QuestAchieveObjective, "Achieve a single objective for an existing quest for character.", "achieveobjective")]
@@ -58,7 +80,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            context.GetTargetOrInvoker<Player>().QuestManager.QuestAchieveObjective(questId, index);
+            context.InvokingPlayer.QuestManager.QuestAchieveObjective(questId, index);
         }
 
         [Command(Permission.QuestObjective, "Update all quest objectives with type for character.", "objective")]
@@ -71,7 +93,7 @@ namespace NexusForever.WorldServer.Command.Handler
             uint? progress)
         {
             progress ??= 1u;
-            context.GetTargetOrInvoker<Player>().QuestManager.ObjectiveUpdate(type, data, progress.Value);
+            context.InvokingPlayer.QuestManager.ObjectiveUpdate(type, data, progress.Value);
         }
 
         [Command(Permission.QuestKill, "Update all quest objectives that require a kill with the given creature id.", "kill")]
@@ -83,7 +105,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             quantity ??= 1u;
 
-            var target = context.GetTargetOrInvoker<Player>();
+            var target = context.InvokingPlayer;
             target.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature, creatureId, quantity.Value);
             target.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature2, creatureId, quantity.Value);
 

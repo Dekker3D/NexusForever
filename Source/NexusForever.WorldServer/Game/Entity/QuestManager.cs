@@ -33,9 +33,9 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private readonly Player player;
 
-        private readonly Dictionary<ushort, Quest.Quest> completedQuests = new Dictionary<ushort, Quest.Quest>();
-        private readonly Dictionary<ushort, Quest.Quest> inactiveQuests = new Dictionary<ushort, Quest.Quest>();
-        private readonly Dictionary<ushort, Quest.Quest> activeQuests = new Dictionary<ushort, Quest.Quest>();
+        private readonly Dictionary<ushort, Quest.Quest> completedQuests = new();
+        private readonly Dictionary<ushort, Quest.Quest> inactiveQuests = new();
+        private readonly Dictionary<ushort, Quest.Quest> activeQuests = new();
 
         /// <summary>
         /// Create a new <see cref="QuestManager"/> from existing <see cref="CharacterModel"/> database model.
@@ -61,6 +61,7 @@ namespace NexusForever.WorldServer.Game.Entity
                         break;
                     case QuestState.Botched:
                     case QuestState.Ignored:
+                    case QuestState.Mentioned:
                         inactiveQuests.Add(quest.Id, quest);
                         break;
                     case QuestState.Accepted:
@@ -171,6 +172,44 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         /// <summary>
+        /// Mention a <see cref="Quest"/> from supplied quest ID, skipping any prerequisites checks.
+        /// </summary>
+        public void QuestMention(ushort questId)
+        {
+            QuestInfo info = GlobalQuestManager.Instance.GetQuestInfo(questId);
+            if (info == null)
+                throw new ArgumentException($"Invalid quest {questId}!");
+
+            if (DisableManager.Instance.IsDisabled(DisableType.Quest, questId))
+            {
+                player.SendSystemMessage($"Unable to add quest {questId} because it is disabled.");
+                return;
+            }
+
+            if (GetQuest(questId) != null)
+                return;
+
+            QuestMention(info);
+        }
+
+        /// <summary>
+        /// Mention a <see cref="Quest"/> from supplied <see cref="QuestInfo"/>, skipping any prerequisites checks.
+        /// </summary>
+        public void QuestMention(QuestInfo info)
+        {
+            Quest.Quest quest = GetQuest((ushort)info.Entry.Id);
+            if (quest == null)
+                quest = new Quest.Quest(player, info);
+            else
+                QuestRemove(quest);
+
+            quest.State = QuestState.Mentioned;
+            inactiveQuests.Add((ushort)info.Entry.Id, quest);
+
+            log.Trace($"Mentioned new quest {info.Entry.Id}.");
+        }
+
+        /// <summary>
         /// Add a <see cref="Quest"/> from supplied id, optionally supplying <see cref="Item"/> which was used to start the quest.
         /// </summary>
         public void QuestAdd(ushort questId, Item item)
@@ -191,7 +230,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private void QuestAdd(QuestInfo info, Quest.Quest quest, Item item)
         {
-            if (quest?.State == QuestState.Accepted || quest?.State == QuestState.Achieved)
+            if (quest?.State is QuestState.Accepted or QuestState.Achieved)
                 throw new QuestException($"Player {player.CharacterId} tried to start quest {info.Entry.Id} which is already in progress!");
 
             // if quest has already been completed make sure it's repeatable and the reset period has elapsed
@@ -207,15 +246,16 @@ namespace NexusForever.WorldServer.Game.Entity
 
             if (item != null)
             {
-                if (info.Entry.Id != item.Entry.Quest2IdActivation)
-                    throw new QuestException($"Player {player.CharacterId} tried to start quest {info.Entry.Id} from invalid item {item.Entry.Id}!");
+                if (info.Entry.Id != item.Info.Entry.Quest2IdActivation)
+                    throw new QuestException($"Player {player.CharacterId} tried to start quest {info.Entry.Id} from invalid item {item.Info.Entry.Id}!");
 
                 // TODO: consume charge
             }
             else
             {
                 // make sure the player is in range of a quest giver or they are eligible for a communicator message that starts the quest
-                if (!GlobalQuestManager.Instance.GetQuestGivers((ushort)info.Entry.Id)
+                if (!info.CanBeCalledBack() &&
+                    !GlobalQuestManager.Instance.GetQuestGivers((ushort)info.Entry.Id)
                     .Any(c => player.GetVisibleCreature<WorldEntity>(c).Any()))
                 {
                     if (!info.IsCommunicatorReceived())
@@ -248,10 +288,17 @@ namespace NexusForever.WorldServer.Game.Entity
             if (player.Level < info.Entry.PrerequisiteLevel)
                 return false;
 
-            // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-            foreach (ushort questId in info.Entry.PrerequisiteQuests.Where(q => q != 0u))
-                if (GetQuestState(questId) != QuestState.Completed)
+            if (!info.PrerequisiteQuests.IsEmpty)
+            {
+                bool preReqQuestsCompleted;
+                if ((info.Entry.PrerequisiteFlags & 1) != 0u)
+                    preReqQuestsCompleted = info.PrerequisiteQuests.Any(q => GetQuestState((ushort)q.Id) == QuestState.Completed);
+                else
+                    preReqQuestsCompleted = info.PrerequisiteQuests.All(q => GetQuestState((ushort)q.Id) == QuestState.Completed);
+
+                if (!preReqQuestsCompleted)
                     return false;
+            }
 
             if (info.Entry.PrerequisiteId != 0u && !PrerequisiteManager.Instance.Meets(player, info.Entry.PrerequisiteId))
                 return false;
@@ -277,7 +324,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public void QuestAdd(QuestInfo info)
         {
             // make sure player has room for all pushed items
-            if (player.Inventory.GetInventoryFreeBagIndexCount()
+            if (player.Inventory.GetInventorySlotsRemaining(InventoryLocation.Inventory)
                 < info.Entry.PushedItemIds.Count(i => i != 0u))
             {
                 player.SendGenericError(GenericError.ItemInventoryFull);
@@ -288,7 +335,7 @@ namespace NexusForever.WorldServer.Game.Entity
             {
                 uint itemId = info.Entry.PushedItemIds[i];
                 if (itemId != 0u)
-                    player.Inventory.ItemCreate(itemId, info.Entry.PushedItemCounts[i]);
+                    player.Inventory.ItemCreate(InventoryLocation.Inventory, itemId, info.Entry.PushedItemCounts[i]);
             }
 
             // TODO: virtual items
@@ -297,29 +344,7 @@ namespace NexusForever.WorldServer.Game.Entity
             if (quest == null)
                 quest = new Quest.Quest(player, info);
             else
-            {
-                // remove existing quest from its current home before
-                switch (quest.State)
-                {
-                    case QuestState.Abandoned:
-                        activeQuests.Remove(quest.Id);
-                        break;
-                    case QuestState.Completed:
-                        completedQuests.Remove(quest.Id);
-                        break;
-                    case QuestState.Botched:
-                    case QuestState.Ignored:
-                        inactiveQuests.Remove(quest.Id);
-                        break;
-                }
-
-                if (quest.PendingDelete)
-                    quest.EnqueueDelete(false);
-
-                // reset previous objective progress
-                foreach (QuestObjective objective in quest)
-                    objective.Progress = 0u;
-            }
+                QuestRemove(quest);
 
             quest.Flags |= QuestFlags.Tracked;
             quest.State = QuestState.Accepted;
@@ -328,6 +353,32 @@ namespace NexusForever.WorldServer.Game.Entity
             quest.InitialiseTimer();
 
             log.Trace($"Accepted new quest {info.Entry.Id}.");
+        }
+
+        private void QuestRemove(Quest.Quest quest)
+        {
+            // remove existing quest from its current home before
+            switch (quest.State)
+            {
+                case QuestState.Abandoned:
+                    activeQuests.Remove(quest.Id);
+                    break;
+                case QuestState.Completed:
+                    completedQuests.Remove(quest.Id);
+                    break;
+                case QuestState.Botched:
+                case QuestState.Ignored:
+                case QuestState.Mentioned:
+                    inactiveQuests.Remove(quest.Id);
+                    break;
+            }
+
+            if (quest.PendingDelete)
+                quest.EnqueueDelete(false);
+
+            // reset previous objective progress
+            foreach (QuestObjective objective in quest)
+                objective.Progress = 0u;
         }
 
         /// <summary>
@@ -364,7 +415,8 @@ namespace NexusForever.WorldServer.Game.Entity
             if (!quest.CanAbandon())
                 throw new QuestException($"Player {player.CharacterId} tried to abandon quest {questId} which can't be abandoned!");
 
-            if (!quest.PendingCreate)
+            // don't delete quests that have been mentioned, they may not be able to be re-collected.
+            if (!quest.PendingCreate && quest.CanDelete())
                 quest.EnqueueDelete(true);
             else
             {
@@ -380,7 +432,16 @@ namespace NexusForever.WorldServer.Game.Entity
                 }
             }
 
-            quest.State = QuestState.Abandoned;
+            foreach (QuestObjective objective in quest)
+                objective.Progress = 0u;
+
+            if (quest.Info.IsQuestMentioned)
+            {
+                quest.State = QuestState.Mentioned;
+                inactiveQuests.Add(quest.Id, quest);
+            }
+            else
+                quest.State = QuestState.Abandoned;
 
             log.Trace($"Abandoned quest {questId}.");
         }
@@ -400,8 +461,8 @@ namespace NexusForever.WorldServer.Game.Entity
             if (quest.State != QuestState.Accepted)
                 throw new QuestException($"Player {player.CharacterId} tried to achieve quest {questId} with invalid state!");
 
-            foreach (QuestObjectiveEntry entry in quest.Info.Objectives)
-                quest.ObjectiveUpdate((QuestObjectiveType)entry.Type, entry.Data, entry.Count);
+            foreach (QuestObjectiveInfo info in quest.Info.Objectives)
+                quest.ObjectiveUpdate(info.Type, info.Entry.Data, info.Entry.Count);
         }
 
         /// <summary>
@@ -423,7 +484,7 @@ namespace NexusForever.WorldServer.Game.Entity
             if (objective == null)
                 throw new QuestException();
 
-            quest.ObjectiveUpdate((QuestObjectiveType)objective.Entry.Type, objective.Entry.Data, objective.Entry.Count);
+            quest.ObjectiveUpdate(objective.ObjectiveInfo.Type, objective.ObjectiveInfo.Entry.Data, objective.ObjectiveInfo.Entry.Count);
         }
 
         /// <summary>
@@ -457,7 +518,9 @@ namespace NexusForever.WorldServer.Game.Entity
 
             if (communicator)
             {
-                if (!quest.Info.IsCommunicatorReceived())
+                // TODO: check if this is complete, client seems to also refer to contact info
+                // for more see QuestTracker:HelperShowQuestCallbackBtn in LUA which contains the logic to show the complete button in the quest tracker
+                if (!quest.Info.IsCommunicatorReceived() && !quest.Info.CanBeCalledBack())
                     throw new QuestException($"Player {player.CharacterId} tried to complete quest {questId} without communicator message!");
             }
             else
@@ -496,6 +559,11 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private void RewardQuest(QuestInfo info, ushort reward)
         {
+            // Handle all Rewards that are not chosen
+            foreach (Quest2RewardEntry rewardEntry in info.Rewards.Values.Where(x => x.Flags == 0))
+                RewardQuest(rewardEntry);
+
+            // Handle any chosen rewards
             if (reward != 0)
             {
                 if (!info.Rewards.TryGetValue(reward, out Quest2RewardEntry entry))
@@ -522,7 +590,7 @@ namespace NexusForever.WorldServer.Game.Entity
             switch ((QuestRewardType)entry.Quest2RewardTypeId)
             {
                 case QuestRewardType.Item:
-                    player.Inventory.ItemCreate(entry.ObjectId, entry.ObjectAmount);
+                    player.Inventory.ItemCreate(InventoryLocation.Inventory, entry.ObjectId, entry.ObjectAmount);
                     break;
                 case QuestRewardType.Money:
                     player.CurrencyManager.CurrencyAddAmount((CurrencyType)entry.ObjectId, entry.ObjectAmount);
@@ -542,10 +610,19 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public void QuestIgnore(ushort questId, bool ignored)
         {
-            if (GlobalQuestManager.Instance.GetQuestInfo(questId) == null)
+            QuestInfo questInfo = GlobalQuestManager.Instance.GetQuestInfo(questId);
+            if (questInfo == null)
                 throw new ArgumentException($"Invalid quest {questId}!");
 
-            // TODO:
+            Quest.Quest quest = GetQuest((ushort)questInfo.Entry.Id);
+            if (quest == null)
+                quest = new Quest.Quest(player, questInfo);
+            else
+                QuestRemove(quest);
+
+            quest.State = ignored ? QuestState.Ignored : QuestState.Mentioned;
+
+            inactiveQuests.Add(questId, quest);
         }
 
         /// <summary>
@@ -620,6 +697,14 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             foreach (Quest.Quest quest in activeQuests.Values)
                 quest.ObjectiveUpdate(id, progress);
+        }
+
+        /// <summary>
+        /// Returns a collection of all active quests.
+        /// </summary>
+        public IEnumerable<Quest.Quest> GetActiveQuests()
+        {
+            return activeQuests.Values.AsEnumerable();
         }
     }
 }

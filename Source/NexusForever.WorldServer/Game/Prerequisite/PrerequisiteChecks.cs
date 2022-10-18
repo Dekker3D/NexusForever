@@ -1,7 +1,9 @@
 ﻿using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.Prerequisite.Static;
+using NexusForever.WorldServer.Game.Quest.Static;
 using NexusForever.WorldServer.Game.Reputation.Static;
+using System.Linq;
 
 namespace NexusForever.WorldServer.Game.Prerequisite
 {
@@ -53,10 +55,61 @@ namespace NexusForever.WorldServer.Game.Prerequisite
         {
             switch (comparison)
             {
-                case PrerequisiteComparison.Equal: // Active or Completed
-                    return player.QuestManager.GetQuestState((ushort)objectId) == null;
+                case PrerequisiteComparison.Equal:
+                    return player.QuestManager.GetQuestState((ushort)objectId) == (QuestState)value;
+                case PrerequisiteComparison.NotEqual:
+                    return player.QuestManager.GetQuestState((ushort)objectId) != (QuestState)value;
                 default:
                     log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Quest}!");
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Prerequisite)]
+        private static bool PrerequisiteCheckPrerequisite(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            {
+                case PrerequisiteComparison.NotEqual:
+                    return !Instance.Meets(player, objectId);
+                case PrerequisiteComparison.Equal:
+                    return Instance.Meets(player, objectId);
+                default:
+                    log.Warn($"Unhandled {comparison} for {PrerequisiteType.Prerequisite}!");
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.HasBuff)]
+        private static bool PrerequisiteCheckHasBuff(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            return true;
+            /*var list = player.GetPendingSpellsByID(value).ToList();
+            switch (comparison)
+            {
+                case PrerequisiteComparison.Equal:
+                    return player.GetPendingSpellsByID(value).Any();
+                case PrerequisiteComparison.NotEqual:
+                    return !(player.GetPendingSpellsByID(value).Any());
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.HasBuff}!");
+
+                    return false;
+            }*/ // lol fuck no
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Zone)]
+        private static bool PrerequisiteCheckZone(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            {
+                case PrerequisiteComparison.Equal:
+                    return player.Zone.Id == value;
+                case PrerequisiteComparison.NotEqual:
+                    return player.Zone.Id != value;
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Zone}!");
+
                     return false;
             }
         }
@@ -90,6 +143,20 @@ namespace NexusForever.WorldServer.Game.Prerequisite
             }
         }
 
+        [PrerequisiteCheck(PrerequisiteType.Gender)]
+        private static bool PrerequisiteCheckGender(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // Check whether we have the right gender.
+            switch(comparison)
+            {
+                case PrerequisiteComparison.Equal:
+                    return (uint)player.Sex == value;
+                case PrerequisiteComparison.NotEqual:
+                    return (uint)player.Sex != value;
+            }
+            return false;
+        }
+
         [PrerequisiteCheck(PrerequisiteType.SpellBaseId)]
         private static bool PrerequisiteCheckSpellBaseId(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
         {
@@ -119,6 +186,21 @@ namespace NexusForever.WorldServer.Game.Prerequisite
             }
         }
 
+        [PrerequisiteCheck(PrerequisiteType.HoverboardFlair)]
+        private static bool PrerequestCheckHoverboardFlair(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            {
+                case PrerequisiteComparison.Equal:
+                    return player.PetCustomisationManager.GetCustomisation(PetType.HoverBoard, objectId) != null;
+                case PrerequisiteComparison.NotEqual:
+                    return player.PetCustomisationManager.GetCustomisation(PetType.HoverBoard, objectId) == null;
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.HoverboardFlair}!");
+                    return false;
+            }
+        }
+
         [PrerequisiteCheck(PrerequisiteType.Vital)]
         private static bool PrerequisiteCheckVital(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
         {
@@ -142,6 +224,83 @@ namespace NexusForever.WorldServer.Game.Prerequisite
                     log.Warn($"Unhandled {comparison} for {PrerequisiteType.Vital}!");
                     return false;
             }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Disguise)]
+        private static bool PrerequisiteCheckDisguise(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            { // Dummy!
+                case PrerequisiteComparison.Equal:
+                    return true;
+                case PrerequisiteComparison.NotEqual:
+                    return true;
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Disguise}!");
+
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.SpellObj)]
+        private static bool PrerequisiteCheckSpellObj(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // TODO: Confirm how the objectId is calculated. It seems like this check always checks for a Spell that is determined by an objectId.
+
+            // Error message is "Spell requirement not met"
+
+            switch (comparison)
+            {
+                case PrerequisiteComparison.Equal:
+                    return player.SpellManager.GetSpell(value) != null;
+                case PrerequisiteComparison.NotEqual:
+                    return player.SpellManager.GetSpell(value) == null;
+                default:
+                    log.Warn($"Unhandled {comparison} for {PrerequisiteType.SpellObj}!");
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.GroundMountArea)]
+        private static bool PrerequisiteCheckGroundMountArea(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // Check whether this is a valid area for a ground mount.
+
+            return true;
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.HoverboardArea)]
+        private static bool PrerequisiteCheckHoverboardArea(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // Check whether this is a valid area for a hoverboard.
+
+            return true;
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Plane)]
+        private static bool PrerequisiteCheckPlane(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // Unknown how this works at this time, but there is a Spell Effect called "ChangePlane". Could be related.
+            // TODO: Investigate further.
+
+            // Returning true by default as many mounts used this
+            return true;
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Unhealthy)]
+        private static bool PrerequisiteCheckUnhealthy(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // Check whether we are in "unhealthy time".
+
+            return true;
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Loyalty)]
+        private static bool PrerequisiteCheckLoyalty(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            // Check whether we have a high enough loyalty.
+
+            return true;
         }
     }
 }

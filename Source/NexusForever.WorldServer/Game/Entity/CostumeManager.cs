@@ -20,16 +20,15 @@ namespace NexusForever.WorldServer.Game.Entity
     {
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
-        // TODO: need to research Server092C more to find a permanent home for this
-        public const byte CostumeCap = 4;
+        public byte CostumeCap => (byte)(player.Session.EntitlementManager.GetRewardProperty(RewardPropertyType.CostumeSlots).GetValue(0) ?? 4u);
 
         // hard limit, array storing costumes at client is 12 in size 
         private const byte MaxCostumes = 12;
         private const double CostumeSwapCooldown = 15d;
 
         private readonly Player player;
-        private readonly Dictionary<byte, Costume> costumes = new Dictionary<byte, Costume>();
-        private readonly Dictionary<uint, CostumeUnlock> costumeUnlocks = new Dictionary<uint, CostumeUnlock>();
+        private readonly Dictionary<byte, Costume> costumes = new();
+        private readonly Dictionary<uint, CostumeUnlock> costumeUnlocks = new();
         private double costumeSwapCooldown;
 
         /// <summary>
@@ -163,7 +162,8 @@ namespace NexusForever.WorldServer.Game.Entity
                 costumes.Add(costume.Index, costume);
             }
 
-            SetCostume((sbyte)costumeSave.Index, costume);
+            if (costumeSave.Index == player.CostumeIndex)
+                player.Inventory.VisualUpdate(costume);
 
             SendCostume(costume);
             SendCostumeSaveResult(CostumeSaveResult.Saved, costumeSave.Index, costumeSave.MannequinIndex);
@@ -237,12 +237,13 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private uint GetMaxUnlockItemCount()
         {
-            // client defaults to 1000 if entry doesn't exist
+            return 2000u;
+            /*// client defaults to 1000 if entry doesn't exist
             GameFormulaEntry entry = GameTableManager.Instance.GameFormula.GetEntry(1203);
             if (entry == null)
                 return 1000u;
 
-            return entry.Dataint0/* + countFromEntitlements*/;
+            return entry.Dataint0;// + countFromEntitlements;*/
         }
 
         /// <summary>

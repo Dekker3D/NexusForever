@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NexusForever.Database.Character;
 
+#nullable disable
+
 namespace NexusForever.Database.Character.Migrations
 {
     [DbContext(typeof(CharacterContext))]
@@ -14,1548 +16,2185 @@ namespace NexusForever.Database.Character.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5")
+                .HasAnnotation("ProductVersion", "6.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterAchievementModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("AchievementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("achievementId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("achievementId");
 
                     b.Property<uint>("Data0")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("data0")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("data0");
 
                     b.Property<uint>("Data1")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("data1")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("data1");
 
                     b.Property<DateTime?>("DateCompleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("dateCompleted")
                         .HasColumnType("datetime")
-                        .HasDefaultValue(null);
+                        .HasColumnName("dateCompleted");
 
                     b.HasKey("Id", "AchievementId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_achievement");
+                    b.ToTable("character_achievement", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterActionSetAmpModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("SpecIndex")
-                        .HasColumnName("specIndex")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("specIndex");
 
                     b.Property<ushort>("AmpId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("ampId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("ampId");
 
                     b.HasKey("Id", "SpecIndex", "AmpId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_action_set_amp");
+                    b.ToTable("character_action_set_amp", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterActionSetShortcutModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("SpecIndex")
-                        .HasColumnName("specIndex")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("specIndex");
 
                     b.Property<ushort>("Location")
-                        .HasColumnName("location")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("location");
 
                     b.Property<uint>("ObjectId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("objectId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("objectId");
 
                     b.Property<byte>("ShortcutType")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("shortcutType")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("shortcutType");
 
                     b.Property<byte>("Tier")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("tier")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("tier");
 
                     b.HasKey("Id", "SpecIndex", "Location")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_action_set_shortcut");
+                    b.ToTable("character_action_set_shortcut", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterAppearanceModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Slot")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("slot")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("slot");
 
                     b.Property<ushort>("DisplayId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("displayId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("displayId");
 
                     b.HasKey("Id", "Slot")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_appearance");
+                    b.ToTable("character_appearance", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterBoneModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("BoneIndex")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("boneIndex")
                         .HasColumnType("tinyint(4) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("boneIndex");
 
                     b.Property<float>("Bone")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("bone")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("bone");
 
                     b.HasKey("Id", "BoneIndex")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_bone");
+                    b.ToTable("character_bone", (string)null);
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterContactModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<ulong>("OwnerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("ownerId");
+
+                    b.Property<ulong>("ContactId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("contactId");
+
+                    b.Property<byte>("Accepted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(8) unsigned")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("accepted");
+
+                    b.Property<string>("InviteMessage")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("inviteMessage")
+                        .HasDefaultValueSql("''");
+
+                    b.Property<string>("PrivateNote")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("privateNote")
+                        .HasDefaultValueSql("''");
+
+                    b.Property<DateTime>("RequestTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasColumnName("requestTime")
+                        .HasDefaultValueSql("current_timestamp()");
+
+                    b.Property<uint>("Type")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(3) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("type");
+
+                    b.HasKey("Id", "OwnerId", "ContactId")
+                        .HasName("PRIMARY");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName("contactGuid");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("character_contact", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeItemModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Index")
-                        .HasColumnName("index")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("index");
 
                     b.Property<byte>("Slot")
-                        .HasColumnName("slot")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("slot");
 
                     b.Property<int>("DyeData")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("dyeData")
                         .HasColumnType("int(10)")
-                        .HasDefaultValue(0);
+                        .HasDefaultValue(0)
+                        .HasColumnName("dyeData");
 
                     b.Property<uint>("ItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("itemId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("itemId");
 
                     b.HasKey("Id", "Index", "Slot")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_costume_item");
+                    b.ToTable("character_costume_item", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Index")
-                        .HasColumnName("index")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("index");
 
                     b.Property<uint>("Mask")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("mask")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("mask");
 
                     b.Property<DateTime>("Timestamp")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnName("timestamp")
                         .HasColumnType("datetime")
+                        .HasColumnName("timestamp")
                         .HasDefaultValueSql("current_timestamp()");
 
                     b.HasKey("Id", "Index")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_costume");
+                    b.ToTable("character_costume", (string)null);
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCreateModel", b =>
+                {
+                    b.Property<byte>("Race")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(4) unsigned")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("race");
+
+                    b.Property<ushort>("Faction")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint(5) unsigned")
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("faction");
+
+                    b.Property<byte>("CreationStart")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(4) unsigned")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("creationStart");
+
+                    b.Property<string>("Comment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(200)")
+                        .HasDefaultValue("")
+                        .HasColumnName("comment");
+
+                    b.Property<float>("Rx")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("rx");
+
+                    b.Property<float>("Ry")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("ry");
+
+                    b.Property<float>("Rz")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("rz");
+
+                    b.Property<uint>("WorldId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("worldId");
+
+                    b.Property<float>("X")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("x");
+
+                    b.Property<float>("Y")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("y");
+
+                    b.Property<float>("Z")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("z");
+
+                    b.HasKey("Race", "Faction", "CreationStart")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("character_create", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Race = (byte)1,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)4,
+                            Comment = "Exile Human - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)1,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)3,
+                            Comment = "Exile Human - Veteran",
+                            Rx = 0.317613f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 426u,
+                            X = 4110.71f,
+                            Y = -658.6249f,
+                            Z = -5145.48f
+                        },
+                        new
+                        {
+                            Race = (byte)1,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)5,
+                            Comment = "Exile Human - Level 50",
+                            Rx = 0f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 51u,
+                            X = 4074.34f,
+                            Y = -797.8368f,
+                            Z = -2399.37f
+                        },
+                        new
+                        {
+                            Race = (byte)3,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)4,
+                            Comment = "Exile Granok - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)3,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)3,
+                            Comment = "Exile Granok- Veteran",
+                            Rx = 0.317613f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 426u,
+                            X = 4110.71f,
+                            Y = -658.6249f,
+                            Z = -5145.48f
+                        },
+                        new
+                        {
+                            Race = (byte)3,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)5,
+                            Comment = "Exile Granok - Level 50",
+                            Rx = 0f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 51u,
+                            X = 4074.34f,
+                            Y = -797.8368f,
+                            Z = -2399.37f
+                        },
+                        new
+                        {
+                            Race = (byte)4,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)4,
+                            Comment = "Exile Aurin - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)4,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)3,
+                            Comment = "Exile Aurin - Veteran",
+                            Rx = -1.1214035f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 990u,
+                            X = -771.823f,
+                            Y = -904.2852f,
+                            Z = -2269.56f
+                        },
+                        new
+                        {
+                            Race = (byte)4,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)5,
+                            Comment = "Exile Aurin - Level 50",
+                            Rx = 0f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 51u,
+                            X = 4074.34f,
+                            Y = -797.8368f,
+                            Z = -2399.37f
+                        },
+                        new
+                        {
+                            Race = (byte)16,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)4,
+                            Comment = "Exile Mordesh - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)16,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)3,
+                            Comment = "Exile Mordesh - Veteran",
+                            Rx = -1.1214035f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 990u,
+                            X = -771.823f,
+                            Y = -904.2852f,
+                            Z = -2269.56f
+                        },
+                        new
+                        {
+                            Race = (byte)16,
+                            Faction = (ushort)167,
+                            CreationStart = (byte)5,
+                            Comment = "Exile Mordesh - Level 50",
+                            Rx = 0f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 51u,
+                            X = 4074.34f,
+                            Y = -797.8368f,
+                            Z = -2399.37f
+                        },
+                        new
+                        {
+                            Race = (byte)13,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)4,
+                            Comment = "Dominion Chua - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)13,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)3,
+                            Comment = "Dominion Chua - Veteran",
+                            Rx = -2.215535f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 870u,
+                            X = -8261.398f,
+                            Y = -995.471f,
+                            Z = -242.3648f
+                        },
+                        new
+                        {
+                            Race = (byte)13,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)5,
+                            Comment = "Dominion Chua - Level 50",
+                            Rx = -0.7632219f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 22u,
+                            X = -3343.58f,
+                            Y = -887.4646f,
+                            Z = -536.03f
+                        },
+                        new
+                        {
+                            Race = (byte)5,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)4,
+                            Comment = "Dominion Draken - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)5,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)3,
+                            Comment = "Dominion Draken - Veteran",
+                            Rx = -2.215535f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 870u,
+                            X = -8261.398f,
+                            Y = -995.471f,
+                            Z = -242.3648f
+                        },
+                        new
+                        {
+                            Race = (byte)5,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)5,
+                            Comment = "Dominion Draken - Level 50",
+                            Rx = -0.7632219f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 22u,
+                            X = -3343.58f,
+                            Y = -887.4646f,
+                            Z = -536.03f
+                        },
+                        new
+                        {
+                            Race = (byte)1,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)4,
+                            Comment = "Dominion Cassian - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)1,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)3,
+                            Comment = "Dominion Cassian - Veteran",
+                            Rx = -0.45682f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 1387u,
+                            X = -3835.341f,
+                            Y = -980.2174f,
+                            Z = -6050.524f
+                        },
+                        new
+                        {
+                            Race = (byte)1,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)5,
+                            Comment = "Dominion Cassian - Level 50",
+                            Rx = -0.7632219f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 22u,
+                            X = -3343.58f,
+                            Y = -887.4646f,
+                            Z = -536.03f
+                        },
+                        new
+                        {
+                            Race = (byte)12,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)4,
+                            Comment = "Dominion Mechari - Novice",
+                            Rx = -2.751458f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 3460u,
+                            X = 29.1286f,
+                            Y = -853.8716f,
+                            Z = -560.188f
+                        },
+                        new
+                        {
+                            Race = (byte)12,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)3,
+                            Comment = "Dominion Mechari - Veteran",
+                            Rx = -0.45682f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 1387u,
+                            X = -3835.341f,
+                            Y = -980.2174f,
+                            Z = -6050.524f
+                        },
+                        new
+                        {
+                            Race = (byte)12,
+                            Faction = (ushort)166,
+                            CreationStart = (byte)5,
+                            Comment = "Dominion Mechari - Level 50",
+                            Rx = -0.7632219f,
+                            Ry = 0f,
+                            Rz = 0f,
+                            WorldId = 22u,
+                            X = -3343.58f,
+                            Y = -887.4646f,
+                            Z = -536.03f
+                        });
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCurrencyModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("CurrencyId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("currencyId")
                         .HasColumnType("tinyint(4) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("currencyId");
 
                     b.Property<ulong>("Amount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("amount")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("amount");
 
                     b.HasKey("Id", "CurrencyId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_currency");
+                    b.ToTable("character_currency", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCustomisationModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("Label")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("label")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("label");
 
                     b.Property<uint>("Value")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("value")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("value");
 
                     b.HasKey("Id", "Label")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_customisation");
+                    b.ToTable("character_customisation", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterDatacubeModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Type")
-                        .HasColumnName("type")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("type");
 
                     b.Property<ushort>("Datacube")
-                        .HasColumnName("datacube")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("datacube");
 
                     b.Property<uint>("Progress")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("progress")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("progress");
 
                     b.HasKey("Id", "Type", "Datacube")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_datacube");
+                    b.ToTable("character_datacube", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterEntitlementModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("EntitlementId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("entitlementId")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("entitlementId");
 
                     b.Property<uint>("Amount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("amount")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("amount");
 
                     b.HasKey("Id", "EntitlementId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_entitlement");
+                    b.ToTable("character_entitlement", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterKeybindingModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("InputActionId")
-                        .HasColumnName("inputActionId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("inputActionId");
 
                     b.Property<uint>("Code00")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("code00")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("code00");
 
                     b.Property<uint>("Code01")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("code01")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("code01");
 
                     b.Property<uint>("Code02")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("code02")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("code02");
 
                     b.Property<uint>("DeviceEnum00")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("deviceEnum00")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("deviceEnum00");
 
                     b.Property<uint>("DeviceEnum01")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("deviceEnum01")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("deviceEnum01");
 
                     b.Property<uint>("DeviceEnum02")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("deviceEnum02")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("deviceEnum02");
 
                     b.Property<uint>("EventTypeEnum00")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("eventTypeEnum00")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("eventTypeEnum00");
 
                     b.Property<uint>("EventTypeEnum01")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("eventTypeEnum01")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("eventTypeEnum01");
 
                     b.Property<uint>("EventTypeEnum02")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("eventTypeEnum02")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("eventTypeEnum02");
 
                     b.Property<uint>("MetaKeys00")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("metaKeys00")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("metaKeys00");
 
                     b.Property<uint>("MetaKeys01")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("metaKeys01")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("metaKeys01");
 
                     b.Property<uint>("MetaKeys02")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("metaKeys02")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("metaKeys02");
 
                     b.HasKey("Id", "InputActionId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_keybinding");
+                    b.ToTable("character_keybinding", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterMailAttachmentModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("Index")
-                        .HasColumnName("index")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("index");
 
                     b.Property<ulong>("ItemGuid")
-                        .HasColumnName("itemGuid")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("itemGuid");
 
                     b.HasKey("Id", "Index")
                         .HasName("PRIMARY");
 
                     b.HasIndex("ItemGuid")
                         .IsUnique()
-                        .HasName("itemGuid");
+                        .HasDatabaseName("itemGuid");
 
-                    b.ToTable("character_mail_attachment");
+                    b.ToTable("character_mail_attachment", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterMailModel", b =>
                 {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreateTime")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("createTime")
                         .HasColumnType("datetime")
+                        .HasColumnName("createTime")
                         .HasDefaultValueSql("current_timestamp()");
 
                     b.Property<uint>("CreatureId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("creatureId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("creatureId");
 
                     b.Property<ulong>("CurrencyAmount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("currencyAmount")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("currencyAmount");
 
                     b.Property<byte>("CurrencyType")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("currencyType")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("currencyType");
 
                     b.Property<byte>("DeliveryTime")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("deliveryTime")
                         .HasColumnType("tinyint(8) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("deliveryTime");
 
                     b.Property<byte>("Flags")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("flags")
                         .HasColumnType("tinyint(8) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("flags");
 
                     b.Property<byte>("HasPaidOrCollectedCurrency")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("hasPaidOrCollectedCurrency")
                         .HasColumnType("tinyint(8) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("hasPaidOrCollectedCurrency");
 
                     b.Property<byte>("IsCashOnDelivery")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("isCashOnDelivery")
                         .HasColumnType("tinyint(8) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("isCashOnDelivery");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("message")
                         .HasColumnType("varchar(2000)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("message");
 
                     b.Property<ulong>("RecipientId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("recipientId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("recipientId");
 
                     b.Property<ulong>("SenderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("senderId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("senderId");
 
                     b.Property<byte>("SenderType")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("senderType")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("senderType");
 
                     b.Property<string>("Subject")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("subject")
                         .HasColumnType("varchar(200)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("subject");
 
                     b.Property<uint>("TextEntryMessage")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("textEntryMessage")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("textEntryMessage");
 
                     b.Property<uint>("TextEntrySubject")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("textEntrySubject")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("textEntrySubject");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RecipientId")
-                        .HasName("FK__character_mail_recipientId__character_id");
+                        .HasDatabaseName("FK__character_mail_recipientId__character_id");
 
-                    b.ToTable("character_mail");
+                    b.ToTable("character_mail", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterModel", b =>
                 {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("AccountId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("accountId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("accountId");
 
                     b.Property<sbyte>("ActiveCostumeIndex")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("activeCostumeIndex")
                         .HasColumnType("tinyint(4)")
-                        .HasDefaultValue((sbyte)-1);
+                        .HasDefaultValue((sbyte)-1)
+                        .HasColumnName("activeCostumeIndex");
 
                     b.Property<uint>("ActivePath")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("activePath")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("activePath");
 
                     b.Property<byte>("ActiveSpec")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("activeSpec")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("activeSpec");
 
                     b.Property<byte>("Class")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("class")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("class");
 
                     b.Property<DateTime>("CreateTime")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("createTime")
                         .HasColumnType("datetime")
+                        .HasColumnName("createTime")
                         .HasDefaultValueSql("current_timestamp()");
 
                     b.Property<DateTime?>("DeleteTime")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("deleteTime")
                         .HasColumnType("datetime")
-                        .HasDefaultValue(null);
+                        .HasColumnName("deleteTime");
 
                     b.Property<ushort>("FactionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("factionId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("factionId");
 
                     b.Property<uint>("Flags")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("flags")
                         .HasColumnType("int unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("flags");
 
                     b.Property<ulong?>("GuildAffiliation")
-                        .HasColumnName("guildAffiliation")
-                        .HasColumnType("bigint unsigned");
+                        .HasColumnType("bigint unsigned")
+                        .HasColumnName("guildAffiliation");
 
                     b.Property<byte>("InnateIndex")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("innateIndex")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("innateIndex");
 
                     b.Property<sbyte>("InputKeySet")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("inputKeySet")
                         .HasColumnType("tinyint(4)")
-                        .HasDefaultValue((sbyte)0);
+                        .HasDefaultValue((sbyte)0)
+                        .HasColumnName("inputKeySet");
 
                     b.Property<DateTime?>("LastOnline")
-                        .HasColumnName("lastOnline")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime")
+                        .HasColumnName("lastOnline");
 
                     b.Property<byte>("Level")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("level")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("level");
 
                     b.Property<float>("LocationX")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("locationX")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("locationX");
 
                     b.Property<float>("LocationY")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("locationY")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("locationY");
 
                     b.Property<float>("LocationZ")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("locationZ")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("locationZ");
 
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("name")
                         .HasColumnType("varchar(50)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("name");
 
                     b.Property<string>("OriginalName")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("originalName")
                         .HasColumnType("varchar(50)")
-                        .HasDefaultValue(null);
+                        .HasColumnName("originalName");
 
                     b.Property<DateTime>("PathActivatedTimestamp")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("pathActivatedTimestamp")
                         .HasColumnType("datetime")
+                        .HasColumnName("pathActivatedTimestamp")
                         .HasDefaultValueSql("current_timestamp()");
 
                     b.Property<byte>("Race")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("race")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("race");
 
                     b.Property<uint>("RestBonusXp")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("restBonusXp")
                         .HasColumnType("int unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("restBonusXp");
+
+                    b.Property<float>("RotationX")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("rotationX");
+
+                    b.Property<float>("RotationY")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("rotationY");
+
+                    b.Property<float>("RotationZ")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("rotationZ");
 
                     b.Property<byte>("Sex")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("sex")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("sex");
 
                     b.Property<uint>("TimePlayedLevel")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("timePlayedLevel")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("timePlayedLevel");
 
                     b.Property<uint>("TimePlayedTotal")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("timePlayedTotal")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("timePlayedTotal");
 
                     b.Property<ushort>("Title")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("title")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("title");
 
                     b.Property<uint>("TotalXp")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("totalXp")
                         .HasColumnType("int unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("totalXp");
 
                     b.Property<ushort>("WorldId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("worldId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("worldId");
 
                     b.Property<ushort>("WorldZoneId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("worldZoneId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("worldZoneId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId")
-                        .HasName("accountId");
+                        .HasDatabaseName("accountId");
 
-                    b.ToTable("character");
+                    b.ToTable("character", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterPathModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Path")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("path")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("path");
 
                     b.Property<byte>("LevelRewarded")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("levelRewarded")
                         .HasColumnType("tinyint(4) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("levelRewarded");
 
                     b.Property<uint>("TotalXp")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("totalXp")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("totalXp");
 
                     b.Property<byte>("Unlocked")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("unlocked")
                         .HasColumnType("tinyint(1) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("unlocked");
 
                     b.HasKey("Id", "Path")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_path");
+                    b.ToTable("character_path", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterPetCustomisationModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Type")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("type")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("type");
 
                     b.Property<uint>("ObjectId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("objectId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("objectId");
 
                     b.Property<ulong>("FlairIdMask")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("flairIdMask")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("flairIdMask");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("name")
                         .HasColumnType("varchar(128)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("name");
 
                     b.HasKey("Id", "Type", "ObjectId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_pet_customisation");
+                    b.ToTable("character_pet_customisation", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterPetFlairModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("PetFlairId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("petFlairId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("petFlairId");
 
                     b.HasKey("Id", "PetFlairId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_pet_flair");
+                    b.ToTable("character_pet_flair", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterQuestModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("QuestId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("questId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("questId");
 
                     b.Property<byte>("Flags")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("flags")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("flags");
 
                     b.Property<DateTime?>("Reset")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("reset")
                         .HasColumnType("datetime")
-                        .HasDefaultValue(null);
+                        .HasColumnName("reset");
 
                     b.Property<byte>("State")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("state")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("state");
 
                     b.Property<uint?>("Timer")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("timer")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(null);
+                        .HasColumnName("timer");
 
                     b.HasKey("Id", "QuestId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_quest");
+                    b.ToTable("character_quest", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterQuestObjectiveModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("QuestId")
-                        .HasColumnName("questId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("questId");
 
                     b.Property<byte>("Index")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("index")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("index");
 
                     b.Property<uint>("Progress")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("progress")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("progress");
 
                     b.Property<uint?>("Timer")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("timer")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(null);
+                        .HasColumnName("timer");
 
                     b.HasKey("Id", "QuestId", "Index")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_quest_objective");
+                    b.ToTable("character_quest_objective", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterReputation", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("FactionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("factionId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("factionId");
 
                     b.Property<float>("Amount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("amount")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("amount");
 
                     b.HasKey("Id", "FactionId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_reputation");
+                    b.ToTable("character_reputation", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterSpellModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("Spell4BaseId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("spell4BaseId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("spell4BaseId");
 
                     b.Property<byte>("Tier")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("tier")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("tier");
 
                     b.HasKey("Id", "Spell4BaseId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_spell");
+                    b.ToTable("character_spell", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterStatModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Stat")
-                        .HasColumnName("stat")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("stat");
 
                     b.Property<float>("Value")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("value")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("value");
 
                     b.HasKey("Id", "Stat")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_stats");
+                    b.ToTable("character_stats", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterTitleModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("Title")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("title")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("title");
 
                     b.Property<byte>("Revoked")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("revoked")
                         .HasColumnType("tinyint(4) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("revoked");
 
                     b.Property<uint>("TimeRemaining")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("timeRemaining")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("timeRemaining");
 
                     b.HasKey("Id", "Title")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_title");
+                    b.ToTable("character_title", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterTradeskillMaterialModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("MaterialId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("materialId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("materialId");
 
                     b.Property<ushort>("Amount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("amount")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("amount");
 
                     b.HasKey("Id", "MaterialId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_tradeskill_materials");
+                    b.ToTable("character_tradeskill_materials", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterZonemapHexgroupModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("ZoneMap")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("zoneMap")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("zoneMap");
 
                     b.Property<ushort>("HexGroup")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("hexGroup")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("hexGroup");
 
                     b.HasKey("Id", "ZoneMap", "HexGroup")
                         .HasName("PRIMARY");
 
-                    b.ToTable("character_zonemap_hexgroup");
+                    b.ToTable("character_zonemap_hexgroup", (string)null);
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.ChatChannelMemberModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<ulong>("CharacterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("characterId");
+
+                    b.Property<byte>("Flags")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(3) unsigned")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("flags");
+
+                    b.HasKey("Id", "CharacterId")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("chat_channel_member", (string)null);
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.ChatChannelModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(20)")
+                        .HasDefaultValue("")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Password")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(20)")
+                        .HasDefaultValue("")
+                        .HasColumnName("password");
+
+                    b.Property<byte>("Type")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(3) unsigned")
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("type");
+
+                    b.HasKey("Id")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("chat_channel", (string)null);
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.GuildAchievementModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<ushort>("AchievementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint(5) unsigned")
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("achievementId");
+
+                    b.Property<uint>("Data0")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("data0");
+
+                    b.Property<uint>("Data1")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("data1");
+
+                    b.Property<DateTime?>("DateCompleted")
+                        .HasColumnType("datetime")
+                        .HasColumnName("dateCompleted");
+
+                    b.HasKey("Id", "AchievementId")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("guild_achievement", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildDataModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<string>("AdditionalInfo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("additionalInfo")
                         .HasColumnType("varchar(400)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("additionalInfo");
 
                     b.Property<ushort>("BackgroundIconPartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("backgroundIconPartId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("backgroundIconPartId");
 
                     b.Property<ushort>("ForegroundIconPartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("foregroundIconPartId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("foregroundIconPartId");
 
                     b.Property<string>("MessageOfTheDay")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("motd")
                         .HasColumnType("varchar(200)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("motd");
 
                     b.Property<ushort>("ScanLinesPartId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("scanLinesPartId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("scanLinesPartId");
 
                     b.HasKey("Id")
                         .HasName("PRIMARY");
 
-                    b.ToTable("guild_guild_data");
+                    b.ToTable("guild_guild_data", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildMemberModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ulong>("CharacterId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("characterId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("characterId");
+
+                    b.Property<int>("CommunityPlotReservation")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)")
+                        .HasDefaultValue(-1)
+                        .HasColumnName("communityPlotReservation");
 
                     b.Property<string>("Note")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("note")
                         .HasColumnType("varchar(32)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("note");
 
                     b.Property<byte>("Rank")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("rank")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("rank");
 
                     b.HasKey("Id", "CharacterId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("guild_member");
+                    b.ToTable("guild_member", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildModel", b =>
                 {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<DateTime>("CreateTime")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("createTime")
                         .HasColumnType("datetime")
+                        .HasColumnName("createTime")
                         .HasDefaultValueSql("current_timestamp()");
 
                     b.Property<DateTime?>("DeleteTime")
-                        .HasColumnName("deleteTime")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime")
+                        .HasColumnName("deleteTime");
 
                     b.Property<uint>("Flags")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("flags")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("flags");
 
                     b.Property<ulong?>("LeaderId")
-                        .HasColumnName("leaderId")
-                        .HasColumnType("bigint(20) unsigned");
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasColumnName("leaderId");
 
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("name")
                         .HasColumnType("varchar(30)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("name");
 
                     b.Property<ulong?>("OriginalLeaderId")
-                        .HasColumnName("orginialLeaderId")
-                        .HasColumnType("bigint(20) unsigned");
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasColumnName("originalLeaderId");
 
                     b.Property<string>("OriginalName")
-                        .HasColumnName("originalName")
-                        .HasColumnType("varchar(30)");
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("originalName");
 
                     b.Property<byte>("Type")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("type")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("type");
 
                     b.HasKey("Id")
                         .HasName("PRIMARY");
 
-                    b.ToTable("guild");
+                    b.ToTable("guild", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildRankModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Index")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("index")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("index");
 
                     b.Property<ulong>("BankWithdrawalPermission")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("bankWithdrawPermission")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("bankWithdrawPermission");
 
                     b.Property<ulong>("MoneyWithdrawalLimit")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("moneyWithdrawalLimit")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("moneyWithdrawalLimit");
 
                     b.Property<string>("Name")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("name")
                         .HasColumnType("varchar(16)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("name");
 
                     b.Property<uint>("Permission")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("permission")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("permission");
 
                     b.Property<ulong>("RepairLimit")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("repairLimit")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("repairLimit");
 
                     b.HasKey("Id", "Index")
                         .HasName("PRIMARY");
 
-                    b.ToTable("guild_rank");
+                    b.ToTable("guild_rank", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ItemModel", b =>
                 {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<uint>("BagIndex")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("bagIndex")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("bagIndex");
 
                     b.Property<uint>("Charges")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("charges")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("charges");
 
                     b.Property<float>("Durability")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("durability")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("durability");
 
                     b.Property<uint>("ExpirationTimeLeft")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("expirationTimeLeft")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("expirationTimeLeft");
 
                     b.Property<uint>("ItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("itemId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("itemId");
 
                     b.Property<ushort>("Location")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("location")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("location");
 
                     b.Property<ulong?>("OwnerId")
-                        .HasColumnName("ownerId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(null);
+                        .HasColumnName("ownerId");
 
                     b.Property<uint>("StackCount")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("stackCount")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("stackCount");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId")
-                        .HasName("FK__item_ownerId__character_id");
+                        .HasDatabaseName("FK__item_ownerId__character_id");
 
-                    b.ToTable("item");
+                    b.ToTable("item", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ResidenceDecor", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ulong>("DecorId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("decorId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("decorId");
 
                     b.Property<ushort>("ColourShiftId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("colourShiftId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("colourShiftId");
 
                     b.Property<uint>("DecorInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("decorInfoId")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("decorInfoId");
 
                     b.Property<ulong>("DecorParentId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("decorParentId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("decorParentId");
 
                     b.Property<uint>("DecorType")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("decorType")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(0u);
+                        .HasDefaultValue(0u)
+                        .HasColumnName("decorType");
+
+                    b.Property<uint>("HookBagIndex")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("hookBagIndex");
+
+                    b.Property<uint>("HookIndex")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("hookIndex");
 
                     b.Property<uint>("PlotIndex")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("plotIndex")
                         .HasColumnType("int(10) unsigned")
-                        .HasDefaultValue(2147483647u);
+                        .HasDefaultValue(2147483647u)
+                        .HasColumnName("plotIndex");
 
                     b.Property<float>("Qw")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("qw")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("qw");
 
                     b.Property<float>("Qx")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("qx")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("qx");
 
                     b.Property<float>("Qy")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("qy")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("qy");
 
                     b.Property<float>("Qz")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("qz")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("qz");
 
                     b.Property<float>("Scale")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("scale")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("scale");
 
                     b.Property<float>("X")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("x")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("x");
 
                     b.Property<float>("Y")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("y")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("y");
 
                     b.Property<float>("Z")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("z")
                         .HasColumnType("float")
-                        .HasDefaultValue(0f);
+                        .HasDefaultValue(0f)
+                        .HasColumnName("z");
 
                     b.HasKey("Id", "DecorId")
                         .HasName("PRIMARY");
 
-                    b.ToTable("residence_decor");
+                    b.ToTable("residence_decor", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ResidenceModel", b =>
                 {
                     b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<ushort>("DoorDecorInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("doorDecorInfoId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("doorDecorInfoId");
 
                     b.Property<ushort>("EntrywayDecorInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("entrywayDecorInfoId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("entrywayDecorInfoId");
 
                     b.Property<ushort>("Flags")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("flags")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("flags");
 
                     b.Property<byte>("GardenSharing")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("gardenSharing")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("gardenSharing");
 
                     b.Property<ushort>("GroundWallpaperId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("groundWallpaperId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("groundWallpaperId");
+
+                    b.Property<ulong?>("GuildOwnerId")
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasColumnName("guildOwnerId");
 
                     b.Property<ushort>("MusicId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("musicId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("musicId");
+
+                    b.Property<ulong>("NSFWLock")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("nsfwlock");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("name")
                         .HasColumnType("varchar(50)")
-                        .HasDefaultValue("");
+                        .HasDefaultValue("")
+                        .HasColumnName("name");
 
-                    b.Property<ulong>("OwnerId")
-                        .HasColumnName("ownerId")
+                    b.Property<ulong?>("OwnerId")
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasColumnName("ownerId");
 
                     b.Property<byte>("PrivacyLevel")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("privacyLevel")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("privacyLevel");
 
                     b.Property<byte>("PropertyInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("propertyInfoId")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("propertyInfoId");
+
+                    b.Property<ushort>("ResidenceInfoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint unsigned")
+                        .HasColumnName("residenceInfoId")
+                        .HasDefaultValueSql("'0'");
 
                     b.Property<byte>("ResourceSharing")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("resourceSharing")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("resourceSharing");
 
                     b.Property<ushort>("RoofDecorInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("roofDecorInfoId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("roofDecorInfoId");
 
                     b.Property<ushort>("SkyWallpaperId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("skyWallpaperId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("skyWallpaperId");
 
                     b.Property<ushort>("WallpaperId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("wallpaperId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("wallpaperId");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GuildOwnerId");
+
                     b.HasIndex("OwnerId")
                         .IsUnique()
-                        .HasName("ownerId");
+                        .HasDatabaseName("ownerId");
 
-                    b.ToTable("residence");
+                    b.ToTable("residence", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ResidencePlotModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .HasColumnName("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
-                        .HasDefaultValue(0ul);
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
 
                     b.Property<byte>("Index")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("index")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("index");
 
                     b.Property<byte>("BuildState")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("buildState")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("buildState");
 
                     b.Property<ushort>("PlotInfoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("plotInfoId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("plotInfoId");
 
                     b.Property<byte>("PlugFacing")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("plugFacing")
                         .HasColumnType("tinyint(3) unsigned")
-                        .HasDefaultValue((byte)0);
+                        .HasDefaultValue((byte)0)
+                        .HasColumnName("plugFacing");
 
                     b.Property<ushort>("PlugItemId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("plugItemId")
                         .HasColumnType("smallint(5) unsigned")
-                        .HasDefaultValue((ushort)0);
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("plugItemId");
 
                     b.HasKey("Id", "Index")
                         .HasName("PRIMARY");
 
-                    b.ToTable("residence_plot");
+                    b.ToTable("residence_plot", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterAchievementModel", b =>
@@ -1563,9 +2202,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Achievement")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_achievement_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_achievement_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterActionSetAmpModel", b =>
@@ -1573,9 +2214,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("ActionSetAmp")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_action_set_amp_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_action_set_amp_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterActionSetShortcutModel", b =>
@@ -1583,9 +2226,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("ActionSetShortcut")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_action_set_shortcut_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_action_set_shortcut_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterAppearanceModel", b =>
@@ -1593,9 +2238,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Appearance")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_appearance_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_appearance_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterBoneModel", b =>
@@ -1603,9 +2250,23 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Bone")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK_character_bone_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_character_bone_id__character_id");
+
+                    b.Navigation("Character");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterContactModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
+                        .WithMany("Contact")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__character_contact_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeItemModel", b =>
@@ -1613,9 +2274,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterCostumeModel", "Costume")
                         .WithMany("CostumeItem")
                         .HasForeignKey("Id", "Index")
-                        .HasConstraintName("FK__character_costume_item_id-index__character_costume_id-index")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_costume_item_id-index__character_costume_id-index");
+
+                    b.Navigation("Costume");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeModel", b =>
@@ -1623,9 +2286,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Costume")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_costume_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_costume_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCurrencyModel", b =>
@@ -1633,9 +2298,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Currency")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK_character_currency_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK_character_currency_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCustomisationModel", b =>
@@ -1643,9 +2310,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Customisation")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_customisation_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_customisation_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterDatacubeModel", b =>
@@ -1653,9 +2322,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Datacube")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_datacube_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_datacube_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterEntitlementModel", b =>
@@ -1663,9 +2334,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Entitlement")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_entitlement_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_entitlement_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterKeybindingModel", b =>
@@ -1673,9 +2346,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Keybinding")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_keybinding_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_keybinding_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterMailAttachmentModel", b =>
@@ -1683,16 +2358,20 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterMailModel", "Mail")
                         .WithMany("Attachment")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_mail_attachment_id__character_mail_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_mail_attachment_id__character_mail_id");
 
                     b.HasOne("NexusForever.Database.Character.Model.ItemModel", "Item")
                         .WithOne("MailAttachment")
                         .HasForeignKey("NexusForever.Database.Character.Model.CharacterMailAttachmentModel", "ItemGuid")
-                        .HasConstraintName("FK__character_mail_attachment_itemGuid__item_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_mail_attachment_itemGuid__item_id");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Mail");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterMailModel", b =>
@@ -1700,9 +2379,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Recipient")
                         .WithMany("Mail")
                         .HasForeignKey("RecipientId")
-                        .HasConstraintName("FK__character_mail_recipientId__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_mail_recipientId__character_id");
+
+                    b.Navigation("Recipient");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterPathModel", b =>
@@ -1710,9 +2391,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Path")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_path_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_path_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterPetCustomisationModel", b =>
@@ -1720,9 +2403,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("PetCustomisation")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_pet_customisation_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_pet_customisation_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterPetFlairModel", b =>
@@ -1730,9 +2415,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("PetFlair")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_pet_flair_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_pet_flair_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterQuestModel", b =>
@@ -1740,9 +2427,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Quest")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_quest_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_quest_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterQuestObjectiveModel", b =>
@@ -1750,9 +2439,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterQuestModel", "Quest")
                         .WithMany("QuestObjective")
                         .HasForeignKey("Id", "QuestId")
-                        .HasConstraintName("FK__character_quest_objective_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_quest_objective_id__character_id");
+
+                    b.Navigation("Quest");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterReputation", b =>
@@ -1760,9 +2451,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Reputation")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_reputation_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_reputation_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterSpellModel", b =>
@@ -1770,9 +2463,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Spell")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_spell_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_spell_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterStatModel", b =>
@@ -1780,9 +2475,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Stat")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_stats_stat_id_character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_stats_stat_id_character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterTitleModel", b =>
@@ -1790,9 +2487,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("CharacterTitle")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_title_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_title_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterTradeskillMaterialModel", b =>
@@ -1800,9 +2499,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("TradeskillMaterials")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_tradeskill_material_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_tradeskill_material_id__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterZonemapHexgroupModel", b =>
@@ -1810,9 +2511,35 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("ZonemapHexgroup")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__character_zonemap_hexgroup_id__character_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__character_zonemap_hexgroup_id__character_id");
+
+                    b.Navigation("Character");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.ChatChannelMemberModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Character.Model.ChatChannelModel", "Channel")
+                        .WithMany("Members")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__chat_channel_member_id__chat_channel_id");
+
+                    b.Navigation("Channel");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.GuildAchievementModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Character.Model.GuildModel", "Guild")
+                        .WithMany("Achievement")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__guild_achievement_id__guild_id");
+
+                    b.Navigation("Guild");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildDataModel", b =>
@@ -1820,9 +2547,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.GuildModel", "Guild")
                         .WithOne("GuildData")
                         .HasForeignKey("NexusForever.Database.Character.Model.GuildDataModel", "Id")
-                        .HasConstraintName("FK__guild_guild_data_id__guild_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__guild_guild_data_id__guild_id");
+
+                    b.Navigation("Guild");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildMemberModel", b =>
@@ -1830,9 +2559,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.GuildModel", "Guild")
                         .WithMany("GuildMember")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__guild_member_id__guild_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__guild_member_id__guild_id");
+
+                    b.Navigation("Guild");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.GuildRankModel", b =>
@@ -1840,9 +2571,11 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.GuildModel", "Guild")
                         .WithMany("GuildRank")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__guild_rank_id__guild_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__guild_rank_id__guild_id");
+
+                    b.Navigation("Guild");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ItemModel", b =>
@@ -1850,8 +2583,10 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithMany("Item")
                         .HasForeignKey("OwnerId")
-                        .HasConstraintName("FK__item_ownerId__character_id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasConstraintName("FK__item_ownerId__character_id");
+
+                    b.Navigation("Character");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ResidenceDecor", b =>
@@ -1859,19 +2594,28 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.ResidenceModel", "Residence")
                         .WithMany("Decor")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__residence_decor_id__residence_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__residence_decor_id__residence_id");
+
+                    b.Navigation("Residence");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ResidenceModel", b =>
                 {
+                    b.HasOne("NexusForever.Database.Character.Model.GuildModel", "Guild")
+                        .WithMany("Residence")
+                        .HasForeignKey("GuildOwnerId")
+                        .HasConstraintName("FK__residence_guildOwnerId__guild_id");
+
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
                         .WithOne("Residence")
                         .HasForeignKey("NexusForever.Database.Character.Model.ResidenceModel", "OwnerId")
-                        .HasConstraintName("FK__residence_ownerId__character_id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasConstraintName("FK__residence_ownerId__character_id");
+
+                    b.Navigation("Character");
+
+                    b.Navigation("Guild");
                 });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.ResidencePlotModel", b =>
@@ -1879,9 +2623,109 @@ namespace NexusForever.Database.Character.Migrations
                     b.HasOne("NexusForever.Database.Character.Model.ResidenceModel", "Residence")
                         .WithMany("Plot")
                         .HasForeignKey("Id")
-                        .HasConstraintName("FK__residence_plot_id__residence_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("FK__residence_plot_id__residence_id");
+
+                    b.Navigation("Residence");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeModel", b =>
+                {
+                    b.Navigation("CostumeItem");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterMailModel", b =>
+                {
+                    b.Navigation("Attachment");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterModel", b =>
+                {
+                    b.Navigation("Achievement");
+
+                    b.Navigation("ActionSetAmp");
+
+                    b.Navigation("ActionSetShortcut");
+
+                    b.Navigation("Appearance");
+
+                    b.Navigation("Bone");
+
+                    b.Navigation("CharacterTitle");
+
+                    b.Navigation("Contact");
+
+                    b.Navigation("Costume");
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Customisation");
+
+                    b.Navigation("Datacube");
+
+                    b.Navigation("Entitlement");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("Keybinding");
+
+                    b.Navigation("Mail");
+
+                    b.Navigation("Path");
+
+                    b.Navigation("PetCustomisation");
+
+                    b.Navigation("PetFlair");
+
+                    b.Navigation("Quest");
+
+                    b.Navigation("Reputation");
+
+                    b.Navigation("Residence");
+
+                    b.Navigation("Spell");
+
+                    b.Navigation("Stat");
+
+                    b.Navigation("TradeskillMaterials");
+
+                    b.Navigation("ZonemapHexgroup");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterQuestModel", b =>
+                {
+                    b.Navigation("QuestObjective");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.ChatChannelModel", b =>
+                {
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.GuildModel", b =>
+                {
+                    b.Navigation("Achievement");
+
+                    b.Navigation("GuildData");
+
+                    b.Navigation("GuildMember");
+
+                    b.Navigation("GuildRank");
+
+                    b.Navigation("Residence");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.ItemModel", b =>
+                {
+                    b.Navigation("MailAttachment");
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.ResidenceModel", b =>
+                {
+                    b.Navigation("Decor");
+
+                    b.Navigation("Plot");
                 });
 #pragma warning restore 612, 618
         }

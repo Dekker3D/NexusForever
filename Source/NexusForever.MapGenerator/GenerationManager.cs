@@ -19,16 +19,19 @@ namespace NexusForever.MapGenerator
     public sealed class GenerationManager : Singleton<GenerationManager>
     {
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
+        private string outputDir;
 
         private GenerationManager()
         {
         }
 
-        public void Initialise()
+        public void Initialise(string outputDir)
         {
             log.Info("Generatring base map files...");
 
-            Directory.CreateDirectory("map");
+            this.outputDir = Path.Combine(outputDir, "map");
+
+            Directory.CreateDirectory(this.outputDir);
         }
 
         /// <summary>
@@ -46,12 +49,11 @@ namespace NexusForever.MapGenerator
         /// </summary>
         public void GenerateWorlds(bool singleThread)
         {
-            List<Task> taskList = new List<Task>();
+            var taskList = new List<Task>();
             foreach (WorldEntry entry in GameTableManager.Instance.World.Entries
                 .Where(e => e.AssetPath != string.Empty)
                 .GroupBy(e => e.AssetPath)
-                .Select(g => g.First())
-                .ToArray())
+                .Select(g => g.First()))
             {
                 if (singleThread)
                     ProcessWorld(entry);
@@ -87,7 +89,7 @@ namespace NexusForever.MapGenerator
                 string path = Path.Combine(entry.AssetPath, "*.*.area");
                 foreach (IArchiveFileEntry grid in ArchiveManager.Instance.MainArchive.IndexFile.GetFiles(path))
                 {
-                    Regex regex = new Regex(@"[\w]+\.([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})\.area");
+                    var regex = new Regex(@"[\w]+\.([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})\.area");
                     Match match = regex.Match(grid.FileName);
                     byte x = byte.Parse(match.Groups[1].Value, NumberStyles.HexNumber);
                     byte y = byte.Parse(match.Groups[2].Value, NumberStyles.HexNumber);
@@ -105,7 +107,7 @@ namespace NexusForever.MapGenerator
 
             // Path.ChangeExtension(mapFile.Asset, "nfmap")
             // ChangeExtension doesn't behave correctly on linux
-            string filePath = Path.Combine("map", $"{mapFile.Asset}.nfmap");
+            string filePath = Path.Combine(outputDir, $"{mapFile.Asset}.nfmap");
 
             using (FileStream stream = File.Create(filePath))
             using (var writer = new BinaryWriter(stream))

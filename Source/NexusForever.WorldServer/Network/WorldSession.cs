@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using NexusForever.Database.Auth.Model;
 using NexusForever.Database.Character.Model;
-using NexusForever.Shared.Configuration;
 using NexusForever.Shared.Cryptography;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
@@ -15,13 +14,14 @@ using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.RBAC.Static;
 using NexusForever.WorldServer.Game.Static;
 using NexusForever.WorldServer.Network.Message.Model;
+using NexusForever.WorldServer.Game;
 
 namespace NexusForever.WorldServer.Network
 {
     public class WorldSession : GameSession
     {
         public AccountModel Account { get; private set; }
-        public List<CharacterModel> Characters { get; } = new List<CharacterModel>();
+        public List<CharacterModel> Characters { get; } = new();
 
         public Player Player { get; set; }
 
@@ -30,7 +30,24 @@ namespace NexusForever.WorldServer.Network
         public AccountCurrencyManager AccountCurrencyManager { get; private set; }
         public EntitlementManager EntitlementManager { get; private set; }
 
+        public TimeSpan Uptime
+        {
+            get
+            {
+                return DateTime.UtcNow.Subtract(sessionCreated);
+            }
+        }
+        private DateTime sessionCreated;
+
         public AccountTier AccountTier => AccountRbacManager.HasPermission(Permission.Signature) ? AccountTier.Signature : AccountTier.Basic;
+
+        /// <summary>
+        /// Determines if the <see cref="WorldSession"/> is queued to enter the realm.
+        /// </summary>
+        /// <remarks>
+        /// This occurs when the world has reached the maximum number of allowed players.
+        /// </remarks>
+        public bool? IsQueued { get; set; }
 
         public override void OnAccept(Socket newSocket)
         {
@@ -46,6 +63,11 @@ namespace NexusForever.WorldServer.Network
             });
         }
 
+        public override void ReportLoginFinish()
+        {
+            log.Info($"New session, login took {String.Format("{0, 6:N2}", DateTime.Now.Subtract(AcceptTime).TotalMilliseconds)} ms, account name {Account.Email}");
+        }
+
         protected override IWritable BuildEncryptedMessage(byte[] data)
         {
             return new ServerRealmEncrypted
@@ -58,6 +80,10 @@ namespace NexusForever.WorldServer.Network
         {
             base.OnDisconnect();
             Player?.CleanUp();
+
+            // We check that Account isn't null because AuthServer pings World to check if online
+            if (Account != null)
+                LoginQueueManager.Instance.OnDisconnect(this);
         }
 
         /// <summary>
@@ -69,12 +95,15 @@ namespace NexusForever.WorldServer.Network
                 throw new InvalidOperationException();
 
             Account = account;
+            NetworkManager<WorldSession>.Instance.UpdateSessionId(this, account.Id.ToString());
 
             // managers
             AccountRbacManager     = new AccountRBACManager(this, account);
             GenericUnlockManager   = new GenericUnlockManager(this, account);
             AccountCurrencyManager = new AccountCurrencyManager(this, account);
             EntitlementManager     = new EntitlementManager(this, account);
+
+            sessionCreated = DateTime.UtcNow;
         }
 
         public void SetEncryptionKey(byte[] sessionKey)

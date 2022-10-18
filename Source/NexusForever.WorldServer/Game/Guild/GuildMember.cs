@@ -4,12 +4,15 @@ using NexusForever.Database.Character.Model;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.CharacterCache;
 using NexusForever.WorldServer.Game.Guild.Static;
+using NLog;
+using System;
 using NetworkGuildMember = NexusForever.WorldServer.Network.Message.Model.Shared.GuildMember;
 
 namespace NexusForever.WorldServer.Game.Guild
 {
     public class GuildMember : IBuildable<NetworkGuildMember>
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         public GuildBase Guild { get; }
         public ulong CharacterId { get; }
 
@@ -35,6 +38,17 @@ namespace NexusForever.WorldServer.Game.Guild
         }
         private string note;
 
+        public int CommunityPlotReservation
+        {
+            get => communityPlotReservation;
+            set
+            {
+                communityPlotReservation = value;
+                saveMask |= GuildMemberSaveMask.CommunityPlotReservation;
+            }
+        }
+        private int communityPlotReservation;
+
         private GuildMemberSaveMask saveMask;
 
         /// <summary>
@@ -52,12 +66,13 @@ namespace NexusForever.WorldServer.Game.Guild
         /// </summary>
         public GuildMember(GuildMemberModel model, GuildBase guild, GuildRank guildRank)
         {
-            Guild       = guild;
-            CharacterId = model.CharacterId;
-            rank        = guildRank;
-            note        = model.Note;
+            Guild                    = guild;
+            CharacterId              = model.CharacterId;
+            rank                     = guildRank;
+            note                     = model.Note;
+            communityPlotReservation = model.CommunityPlotReservation;
 
-            saveMask    = GuildMemberSaveMask.None;
+            saveMask = GuildMemberSaveMask.None;
         }
 
         /// <summary>
@@ -65,12 +80,13 @@ namespace NexusForever.WorldServer.Game.Guild
         /// </summary>
         public GuildMember(GuildBase guild, ulong characterId, GuildRank guildRank, string note = "")
         {
-            Guild       = guild;
-            CharacterId = characterId;
-            rank        = guildRank;
-            this.note   = note;
+            Guild                    = guild;
+            CharacterId              = characterId;
+            rank                     = guildRank;
+            this.note                = note;
+            communityPlotReservation = -1;
 
-            saveMask    = GuildMemberSaveMask.Create;
+            saveMask = GuildMemberSaveMask.Create;
         }
 
         /// <summary>
@@ -108,6 +124,11 @@ namespace NexusForever.WorldServer.Game.Guild
                     model.Note = note;
                     entity.Property(p => p.Note).IsModified = true;
                 }
+                if ((saveMask & GuildMemberSaveMask.CommunityPlotReservation) != 0)
+                {
+                    model.CommunityPlotReservation = communityPlotReservation;
+                    entity.Property(p => p.CommunityPlotReservation).IsModified = true;
+                }
             }
 
             saveMask = GuildMemberSaveMask.None;
@@ -119,18 +140,20 @@ namespace NexusForever.WorldServer.Game.Guild
         public NetworkGuildMember Build()
         {
             ICharacter characterInfo = CharacterManager.Instance.GetCharacterInfo(CharacterId);
+            log.Trace($"In GuildMember.Build() : CharacterId = {CharacterId}, characterInfo = {characterInfo}, rank = {rank}");
             return new NetworkGuildMember
             {
-                Realm              = WorldServer.RealmId,
-                CharacterId        = CharacterId,
-                Rank               = rank.Index,
-                Name               = characterInfo.Name,
-                Sex                = characterInfo.Sex,
-                Class              = characterInfo.Class,
-                Path               = characterInfo.Path,
-                Level              = characterInfo.Level,
-                Note               = Note,
-                LastLogoutTimeDays = characterInfo.GetOnlineStatus() ?? 0f
+                Realm                    = WorldServer.RealmId,
+                CharacterId              = CharacterId,
+                Rank                     = rank.Index,
+                Name                     = characterInfo.Name,
+                Sex                      = characterInfo.Sex,
+                Class                    = characterInfo.Class,
+                Path                     = characterInfo.Path,
+                Level                    = characterInfo.Level,
+                Note                     = Note,
+                LastLogoutTimeDays       = characterInfo.GetOnlineStatus() ?? 0f,
+                CommunityPlotReservation = communityPlotReservation
             };
         }
 
@@ -143,6 +166,27 @@ namespace NexusForever.WorldServer.Game.Guild
                 saveMask |= GuildMemberSaveMask.Delete;
             else
                 saveMask &= ~GuildMemberSaveMask.Delete;
+        }
+
+        /// <summary>
+        /// Return a <see cref="GuildMember"/> packet of this <see cref="Member"/>
+        /// </summary>
+        public NetworkGuildMember BuildGuildMemberPacket()
+        {
+            ICharacter characterInfo = CharacterManager.Instance.GetCharacterInfo(CharacterId);
+            return new NetworkGuildMember
+            {
+                Realm = WorldServer.RealmId,
+                CharacterId = CharacterId,
+                Rank = Rank.Index,
+                Name = characterInfo.Name,
+                Sex = characterInfo.Sex,
+                Class = characterInfo.Class,
+                Path = characterInfo.Path,
+                Level = characterInfo.Level,
+                Note = Note,
+                LastLogoutTimeDays = (float) (characterInfo.GetOnlineStatus() ?? 0.0f)
+            };
         }
     }
 }

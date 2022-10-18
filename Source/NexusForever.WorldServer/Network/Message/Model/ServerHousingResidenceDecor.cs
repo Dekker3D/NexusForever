@@ -12,7 +12,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         public class Decor : IWritable
         {
             public ushort RealmId { get; set; }
-            public ulong DecorId { get; set; }
+            public long DecorId { get; set; }
             public ulong ResidenceId { get; set; }
             public DecorType DecorType { get; set; }
             public uint DecorData { get; set; }
@@ -20,8 +20,8 @@ namespace NexusForever.WorldServer.Network.Message.Model
             public uint HookIndex { get; set; }
             public uint PlotIndex { get; set; } = int.MaxValue;
             public float Scale { get; set; }
-            public Vector3 Position { get; set; } = new Vector3();
-            public Quaternion Rotation { get; set; } = new Quaternion();
+            public Vector3 Position { get; set; } = new();
+            public Quaternion Rotation { get; set; } = new();
             public uint DecorInfoId { get; set; }
             public uint ActivePropUnitId { get; set; }
             public ulong ParentDecorId { get; set; }
@@ -53,7 +53,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         }
 
         public uint Operation { get; set; }
-        public List<Decor> DecorData { get; set; } = new List<Decor>();
+        public List<Decor> DecorData { get; set; } = new();
         
         public void Write(GamePacketWriter writer)
         {
