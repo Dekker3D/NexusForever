@@ -24,35 +24,27 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("Role", ParameterFlags.Optional)]
             uint? role = null)
         {
-            try
+            if (DatabaseManager.Instance.AuthDatabase.AccountExists(email))
             {
-                if (DatabaseManager.Instance.AuthDatabase.AccountExists(email))
-                {
-                    context.SendMessage("Account with that username already exists. Please try another.");
-                    return;
-                }
-                
-                role ??= (ConfigurationManager<WorldServerConfiguration>.Instance.Config.DefaultRole ?? (uint)Role.Player);
-                
-                (string salt, string verifier) = PasswordProvider.GenerateSaltAndVerifier(email, password);
-                DatabaseManager.Instance.AuthDatabase.CreateAccount(email, salt, verifier, (uint)role);
-
-                if (context.InvokingPlayer != null)
-                {
-                    log.Info($"Account {email} created successfully by {context.InvokingPlayer.Name} ({context.InvokingPlayer.Session.Account.Email}).");
-                }
-                else
-                {
-                    log.Info($"Account {email} created successfully.");
-                }
-
-                context.SendMessage($"Account {email} created successfully");
+                context.SendMessage("Account with that username already exists. Please try another.");
+                return;
             }
-            catch (Exception e)
+                
+            role ??= (ConfigurationManager<WorldServerConfiguration>.Instance.Config.DefaultRole ?? (uint)Role.Player);
+                
+            (string salt, string verifier) = PasswordProvider.GenerateSaltAndVerifier(email, password);
+            DatabaseManager.Instance.AuthDatabase.CreateAccount(email, salt, verifier, (uint)role);
+
+            if (context.InvokingPlayer != null)
             {
-                log.Error($"Exception caught in AccountCommandCategory.HandleAccountCreate!\n{e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
+                log.Info($"Account {email} created successfully by {context.InvokingPlayer.Name} ({context.InvokingPlayer.Session.Account.Email}).");
             }
+            else
+            {
+                log.Info($"Account {email} created successfully.");
+            }
+
+            context.SendMessage($"Account {email} created successfully");
         }
 
         [Command(Permission.AccountChangePass, "Change the password of an account.", "changepass")]
@@ -62,31 +54,23 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("New password")]
             string password)
         {
-            try
+            (string salt, string verifier) = PasswordProvider.GenerateSaltAndVerifier(email, password);
+            if (email == null || email.Length <= 0)
             {
-                (string salt, string verifier) = PasswordProvider.GenerateSaltAndVerifier(email, password);
-                if (email == null || email.Length <= 0)
-                {
-                    context.SendError("Account name wasn't specified properly.");
-                    return;
-                }
-                DatabaseManager.Instance.AuthDatabase.ChangeAccountPassword(email, salt, verifier);
+                context.SendError("Account name wasn't specified properly.");
+                return;
+            }
+            DatabaseManager.Instance.AuthDatabase.ChangeAccountPassword(email, salt, verifier);
 
-                if (context.InvokingPlayer != null)
-                {
-                    log.Info($"Account {email} password changed successfully by {context.InvokingPlayer.Name} ({context.InvokingPlayer.Session.Account.Email}).");
-                }
-                else
-                {
-                    log.Info($"Account {email} password changed successfully.");
-                }
-                context.SendMessage($"Account {email} successfully changed!");
-            }
-            catch (Exception e)
+            if (context.InvokingPlayer != null)
             {
-                log.Error($"Exception caught in AccountCommandCategory.HandleAccountChangePass!\n{e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
+                log.Info($"Account {email} password changed successfully by {context.InvokingPlayer.Name} ({context.InvokingPlayer.Session.Account.Email}).");
             }
+            else
+            {
+                log.Info($"Account {email} password changed successfully.");
+            }
+            context.SendMessage($"Account {email} successfully changed!");
         }
 
         [Command(Permission.AccountChangeMyPass, "Change the password of your account.", "changemypass")]
@@ -95,17 +79,9 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("New password")]
             string password)
         {
-            try
-            {
-                Player target = context.InvokingPlayer;
-                log.Info($"{context.InvokingPlayer.Name} successfully changed password of their account {target.Session.Account.Email}.");
-                HandleAccountChangePass(context, target.Session.Account.Email, password);
-            }
-            catch (Exception e)
-            {
-                log.Error($"Exception caught in AccountCommandCategory.HandleAccountChangeMyPass!\nInvoked by {context.InvokingPlayer.Name}; {e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
-            }
+            Player target = context.InvokingPlayer;
+            log.Info($"{context.InvokingPlayer.Name} successfully changed password of their account {target.Session.Account.Email}.");
+            HandleAccountChangePass(context, target.Session.Account.Email, password);
         }
 
         [Command(Permission.AccountDelete, "Delete an account.", "delete")]
@@ -113,28 +89,20 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("Email address of the account to delete")]
             string email)
         {
-            try
+            if (DatabaseManager.Instance.AuthDatabase.DeleteAccount(email))
             {
-                if (DatabaseManager.Instance.AuthDatabase.DeleteAccount(email))
+                if (context.InvokingPlayer != null)
                 {
-                    if (context.InvokingPlayer != null)
-                    {
-                        log.Info($"Account {email} deleted successfully by {context.InvokingPlayer.Name} ({context.InvokingPlayer.Session.Account.Email}).");
-                    }
-                    else
-                    {
-                        log.Info($"Account {email} deleted successfully.");
-                    }
-                    context.SendMessage($"Account {email} successfully removed!");
+                    log.Info($"Account {email} deleted successfully by {context.InvokingPlayer.Name} ({context.InvokingPlayer.Session.Account.Email}).");
                 }
                 else
-                    context.SendMessage($"Cannot find account with Email: {email}");
+                {
+                    log.Info($"Account {email} deleted successfully.");
+                }
+                context.SendMessage($"Account {email} successfully removed!");
             }
-            catch (Exception e)
-            {
-                log.Error($"Exception caught in AccountCommandCategory.HandleAccountDelete!\n{e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
-            }
+            else
+                context.SendMessage($"Cannot find account with Email: {email}");
         }
     }
 }

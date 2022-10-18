@@ -52,17 +52,9 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("New message of the day for the realm.")]
             string message)
         {
-            try
-            {
-                WorldServer.RealmMotd = message;
-                foreach (WorldSession session in NetworkManager<WorldSession>.Instance)
-                    GlobalChatManager.Instance.SendMessage(session, WorldServer.RealmMotd, "MOTD", ChatChannelType.Realm);
-            }
-            catch (Exception e)
-            {
-                log.Error($"Exception caught in RealmCommandCategory.HandleRealmMotd!\nInvoked by {context.InvokingPlayer.Name}; {e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
-            }
+            WorldServer.RealmMotd = message;
+            foreach (WorldSession session in NetworkManager<WorldSession>.Instance)
+                GlobalChatManager.Instance.SendMessage(session, WorldServer.RealmMotd, "MOTD", ChatChannelType.Realm);
         }
 
         [Command(Permission.RealmMaxPlayers, "Set the maximum players allowed to connect.", "max")]

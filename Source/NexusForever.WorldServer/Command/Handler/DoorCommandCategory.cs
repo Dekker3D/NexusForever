@@ -18,29 +18,21 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("Distance to search for doors to open.")]
             float? searchRange)
         {
-            try
-            {
-                searchRange ??= 10f;
+            searchRange ??= 10f;
 
-                Player player = context.InvokingPlayer;
-                player.Map.Search(
-                    player.Position,
-                    searchRange.Value,
-                    new SearchCheckRangeDoorOnly(player.Position, searchRange.Value, player),
-                    out List<GridEntity> intersectedEntities
-                );
+            Player player = context.InvokingPlayer;
+            player.Map.Search(
+                player.Position,
+                searchRange.Value,
+                new SearchCheckRangeDoorOnly(player.Position, searchRange.Value, player),
+                out List<GridEntity> intersectedEntities
+            );
 
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-                foreach (Door door in intersectedEntities)
-                {
-                    context.SendMessage($"Trying to open door {door.Guid}");
-                    door.OpenDoor();
-                }
-            }
-            catch (Exception e)
+            // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+            foreach (Door door in intersectedEntities)
             {
-                log.Error($"Exception caught in DoorCommandCategory.HandleDoorOpen!\nInvoked by {context.InvokingPlayer.Name}; {e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
+                context.SendMessage($"Trying to open door {door.Guid}");
+                door.OpenDoor();
             }
         }
 
@@ -49,29 +41,21 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("Distance to search for doors to close.")]
             float? searchRange)
         {
-            try
-            {
-                searchRange ??= 10f;
+            searchRange ??= 10f;
 
-                Player player = context.InvokingPlayer;
-                player.Map.Search(
-                    player.Position,
-                    searchRange.Value,
-                    new SearchCheckRangeDoorOnly(player.Position, searchRange.Value, player),
-                    out List<GridEntity> intersectedEntities
-                );
+            Player player = context.InvokingPlayer;
+            player.Map.Search(
+                player.Position,
+                searchRange.Value,
+                new SearchCheckRangeDoorOnly(player.Position, searchRange.Value, player),
+                out List<GridEntity> intersectedEntities
+            );
 
-                // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
-                foreach (Door door in intersectedEntities)
-                {
-                    context.SendMessage($"Trying to close door {door.Guid}");
-                    door.CloseDoor();
-                }
-            }
-            catch (Exception e)
+            // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+            foreach (Door door in intersectedEntities)
             {
-                log.Error($"Exception caught in DoorCommandCategory.HandleDoorClose!\nInvoked by {context.InvokingPlayer.Name}; {e.Message} :\n{e.StackTrace}");
-                context.SendError("Oops! An error occurred. Please check your command input and try again.");
+                context.SendMessage($"Trying to close door {door.Guid}");
+                door.CloseDoor();
             }
         }
     }
