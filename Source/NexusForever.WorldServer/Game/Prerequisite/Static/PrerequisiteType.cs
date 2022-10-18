@@ -35,6 +35,7 @@
         Plane           = 232,
         BaseFaction     = 250,
         Unhealthy       = 269,
-        Loyalty         = 270
+        Loyalty         = 270,
+        PurchasedTitle  = 288
     }
 }
