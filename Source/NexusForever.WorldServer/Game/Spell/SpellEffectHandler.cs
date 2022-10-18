@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Numerics;
 using NexusForever.Shared;
@@ -5,7 +6,9 @@ using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Housing;
 using NexusForever.WorldServer.Game.Map;
+using NexusForever.WorldServer.Game.Spell.Event;
 using NexusForever.WorldServer.Game.Spell.Static;
 using NexusForever.WorldServer.Network.Message.Model;
 
@@ -20,6 +23,24 @@ namespace NexusForever.WorldServer.Game.Spell
         {
             // TODO: calculate damage
             info.AddDamage((DamageType)info.Entry.DamageType, 1337);
+        }
+
+        [SpellEffectHandler(SpellEffectType.UnitPropertyModifier)]
+        private void HandleEffectPropertyModifier(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
+        {
+            // TODO: Handle NPCs and other Entities.
+
+            if (!(target is Player player))
+                return;
+
+            PropertyModifier modifier = new PropertyModifier(info.Entry.DataBits01, BitConverter.Int32BitsToSingle((int)info.Entry.DataBits02), BitConverter.Int32BitsToSingle((int)info.Entry.DataBits03));
+            player.AddSpellModifierProperty((Property)info.Entry.DataBits00, this.CastingId, modifier);
+
+            if (info.Entry.DurationTime > 0d)
+                events.EnqueueEvent(new SpellEvent(info.Entry.DurationTime / 1000d, () =>
+                {
+                    player.RemoveSpellProperty((Property)info.Entry.DataBits00, this.CastingId);
+                }));
         }
 
         [SpellEffectHandler(SpellEffectType.Proxy)]
@@ -60,7 +81,7 @@ namespace NexusForever.WorldServer.Game.Spell
             if (!player.CanMount())
                 return;
 
-            var mount = new Mount(player, parameters.SpellInfo.Entry.Id, info.Entry.DataBits00, info.Entry.DataBits01, info.Entry.DataBits04);
+            var mount = new Mount(player, parameters.SpellInfo.Entry.Id, info.Entry.DataBits00, info.Entry.DataBits01, info.Entry.DataBits04, this.CastingId);
             mount.EnqueuePassengerAdd(player, VehicleSeatType.Pilot, 0);
 
             // usually for hover boards
@@ -122,7 +143,7 @@ namespace NexusForever.WorldServer.Game.Spell
                 return;
 
             var rotation = new Quaternion(worldLocation.Facing0, worldLocation.Facing0, worldLocation.Facing2, worldLocation.Facing3);
-            player.Rotation = rotation.ToEulerDegrees();
+            player.Rotation = rotation.ToEulerDegrees() * (float)Math.PI * 2 / 360;
             player.TeleportTo((ushort)worldLocation.WorldId, worldLocation.Position0, worldLocation.Position1, worldLocation.Position2);
         }
 
@@ -211,6 +232,54 @@ namespace NexusForever.WorldServer.Game.Spell
         [SpellEffectHandler(SpellEffectType.Fluff)]
         private void HandleEffectFluff(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
         {
+        }
+
+        [SpellEffectHandler(SpellEffectType.Scale)]
+        private void HandleEffectScale(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
+        {
+        }
+
+        [SpellEffectHandler(SpellEffectType.HousingTeleport)]
+        private void HandleEffectHousingTeleport(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
+        {
+            if (!(target is Player player))
+                return;
+
+            // TODO: Confirm player actually has a house?
+
+            player.HousePreviousWorld = player.Map?.Entry.Id ?? 0u;
+            player.HousePreviousLocation = target.Position;
+
+            Residence residence = GlobalResidenceManager.Instance.GetResidenceByOwner(player.Name);
+            if (residence == null)
+            {
+                residence = GlobalResidenceManager.Instance.CreateResidence(player);
+                if (residence == null)
+                {
+                    player.SendSystemMessage("Error occurred when trying to send you to your housing plot! Please try again.");
+                    return;
+                }
+            }
+
+            player.TeleportTo(GlobalResidenceManager.Instance.GetResidenceEntranceLocation(residence), residence.Id);
+        }
+
+        [SpellEffectHandler(SpellEffectType.HousingEscape)]
+        private void HandleEffectHousingEscape(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
+        {
+            if (!(target is Player player))
+                return;
+
+            if (player.Map == null || !(player.Map is ResidenceMapInstance residenceMap))
+                return;
+
+            Residence mainResidence = residenceMap.GetMainResidence();
+            if(mainResidence == null)
+            {
+                return;
+            }
+
+            player.TeleportTo(GlobalResidenceManager.Instance.GetResidenceEntranceLocation(mainResidence), mainResidence.Id);
         }
     }
 }

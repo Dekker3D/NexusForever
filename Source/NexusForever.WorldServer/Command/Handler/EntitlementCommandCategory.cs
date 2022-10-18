@@ -5,6 +5,8 @@ using NexusForever.WorldServer.Command.Static;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.RBAC.Static;
+using NLog;
+using System;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -12,13 +14,14 @@ namespace NexusForever.WorldServer.Command.Handler
     [CommandTarget(typeof(Player))]
     public class EntitlementCommandCategory : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [Command(Permission.EntitlementAccount, "A collection of commands to manage account entitlements", "account")]
         public class EntitlementCommandAccountCategory : CommandCategory
         {
             [Command(Permission.EntitlementAccountList, "List all entitlements for character.", "list")]
             public void HandleEntitlementCommandAccountList(ICommandContext context)
             {
-                Player player = context.GetTargetOrInvoker<Player>();
+                Player player = context.InvokingPlayer;
                 context.SendMessage($"Entitlements for account {player.Session.Account.Id}:");
                 foreach (AccountEntitlement entitlement in player.Session.EntitlementManager.GetAccountEntitlements()) 
                     context.SendMessage($"Entitlement: {entitlement.Type}, Value: {entitlement.Amount}");
@@ -31,7 +34,7 @@ namespace NexusForever.WorldServer.Command.Handler
             [Command(Permission.EntitlementCharacterList, "List all entitlements for account.", "list")]
             public void HandleEntitlementCommandCharacterList(ICommandContext context)
             {
-                Player player = context.GetTargetOrInvoker<Player>();
+                Player player = context.InvokingPlayer;
                 context.SendMessage($"Entitlements for character {player.Session.Player.CharacterId}:");
                 foreach (CharacterEntitlement entitlement in player.Session.EntitlementManager.GetCharacterEntitlements())
                     context.SendMessage($"Entitlement: {entitlement.Type}, Value: {entitlement.Amount}");

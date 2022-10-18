@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.Network;
@@ -45,6 +46,47 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         public static void HandleEmote(WorldSession session, ClientEmote emote)
         {
             StandState standState = StandState.Stand;
+            EmotesEntry entry = null;
+            if (emote.EmoteId != 0)
+            {
+                entry = GameTableManager.Instance.Emotes.GetEntry(emote.EmoteId);
+                if (entry == null)
+                    throw (new InvalidPacketValueException("HandleEmote: Invalid EmoteId"));
+
+                standState = (StandState)entry.StandState;
+            }
+
+            if (emote.EmoteId == 0 && session.Player.IsSitting)
+                session.Player.Unsit();
+
+            if (emote.EmoteId == 0)
+                return;
+
+            // TODO: Only set this when the Player has an "unlimited duration" emote active - like /sit, /sleep, /dance.
+            session.Player.IsEmoting = true;
+
+            session.Player.EnqueueToVisible(new ServerEntityEmote
+            {
+                EmotesId = (ushort)emote.EmoteId,
+                Seed = emote.Seed,
+                SourceUnitId = session.Player.Guid,
+                TargetUnitId = emote.TargetUnitId,
+                Targeted = emote.Targeted,
+                Silent = emote.Silent
+            });
+
+            if (entry.NoArgAnim != 0)
+                session.Player.EnqueueToVisible(new ServerEmote
+                {
+                    Guid       = session.Player.Guid,
+                    StandState = standState,
+                    EmoteId    = emote.EmoteId
+                });
+        }
+
+        public static void SetEmote(WorldSession session, ClientEmote emote)
+        {
+            StandState standState = StandState.Stand;
             if (emote.EmoteId != 0)
             {
                 EmotesEntry entry = GameTableManager.Instance.Emotes.GetEntry(emote.EmoteId);
@@ -59,29 +101,41 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             session.Player.EnqueueToVisible(new ServerEmote
             {
-                Guid       = session.Player.Guid,
+                Guid = session.Player.Guid,
                 StandState = standState,
-                EmoteId    = emote.EmoteId
-            });
+                EmoteId = emote.EmoteId
+            }, true);
         }
 
         [MessageHandler(GameMessageOpcode.ClientWhoRequest)]
         public static void HandleWhoRequest(WorldSession session, ClientWhoRequest request)
         {
-            var players = new List<ServerWhoResponse.WhoPlayer>
+            var players = new List<ServerWhoResponse.WhoPlayer>();
+
+            List<WorldSession> allSessions = NetworkManager<WorldSession>.Instance.ToList();
+            foreach (WorldSession whoSession in allSessions)
             {
-                new()
+                if (whoSession.Player == null)
+                    continue;
+
+                if (whoSession.Player.IsLoading)
+                    continue;
+
+                if (whoSession.Player.Zone == null)
+                    continue;
+
+                players.Add(new ServerWhoResponse.WhoPlayer
                 {
-                    Name = session.Player.Name,
-                    Level = session.Player.Level,
-                    Race = session.Player.Race,
-                    Class = session.Player.Class,
-                    Path = session.Player.Path,
-                    Faction = session.Player.Faction1,
-                    Sex = session.Player.Sex,
-                    Zone = session.Player.Zone.Id
-                }
-            };
+                    Name = whoSession.Player.Name,
+                    Level = whoSession.Player.Level,
+                    Race = whoSession.Player.Race,
+                    Class = whoSession.Player.Class,
+                    Path = whoSession.Player.Path,
+                    Faction = whoSession.Player.Faction,
+                    Sex = whoSession.Player.Sex,
+                    Zone = whoSession.Player.Zone.Id
+                });
+            }
 
             session.EnqueueMessageEncrypted(new ServerWhoResponse
             {

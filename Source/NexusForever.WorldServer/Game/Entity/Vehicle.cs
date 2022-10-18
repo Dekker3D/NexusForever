@@ -37,7 +37,7 @@ namespace NexusForever.WorldServer.Game.Entity
             SpellEntry    = GameTableManager.Instance.Spell4.GetEntry(spell4Id);
 
             // temp
-            SetProperty(Property.BaseHealth, 800.0f, 800.0f);
+            SetBaseProperty(Property.BaseHealth, 800.0f);
 
             SetStat(Stat.Health, 800u);
             SetStat(Stat.Level, 3u);
@@ -250,6 +250,8 @@ namespace NexusForever.WorldServer.Game.Entity
             // this probably isn't correct for all cases
             if (passengers.Count == 0)
                 RemoveFromMap();
+
+            player.MovementManager.BroadcastCommands();
         }
 
         /// <summary>

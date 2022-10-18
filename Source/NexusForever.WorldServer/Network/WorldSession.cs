@@ -30,6 +30,15 @@ namespace NexusForever.WorldServer.Network
         public AccountCurrencyManager AccountCurrencyManager { get; private set; }
         public EntitlementManager EntitlementManager { get; private set; }
 
+        public TimeSpan Uptime
+        {
+            get
+            {
+                return DateTime.UtcNow.Subtract(sessionCreated);
+            }
+        }
+        private DateTime sessionCreated;
+
         public AccountTier AccountTier => AccountRbacManager.HasPermission(Permission.Signature) ? AccountTier.Signature : AccountTier.Basic;
 
         /// <summary>
@@ -52,6 +61,11 @@ namespace NexusForever.WorldServer.Network
                 AuthMessage    = 0x97998A0,
                 ConnectionType = 11
             });
+        }
+
+        public override void ReportLoginFinish()
+        {
+            log.Info($"New session, login took {String.Format("{0, 6:N2}", DateTime.Now.Subtract(AcceptTime).TotalMilliseconds)} ms, account name {Account.Email}");
         }
 
         protected override IWritable BuildEncryptedMessage(byte[] data)
@@ -88,6 +102,8 @@ namespace NexusForever.WorldServer.Network
             GenericUnlockManager   = new GenericUnlockManager(this, account);
             AccountCurrencyManager = new AccountCurrencyManager(this, account);
             EntitlementManager     = new EntitlementManager(this, account);
+
+            sessionCreated = DateTime.UtcNow;
         }
 
         public void SetEncryptionKey(byte[] sessionKey)

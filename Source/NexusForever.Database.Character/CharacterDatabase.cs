@@ -60,7 +60,10 @@ namespace NexusForever.Database.Character
         public List<CharacterModel> GetAllCharacters()
         {
             using var context = new CharacterContext(config);
-            return context.Character.Where(c => c.DeleteTime == null).ToList();
+            return context.Character
+                .Where(c => c.DeleteTime == null)
+                .Include(c => c.Stat)
+                .ToList();
         }
 
         public ulong GetNextCharacterId()
@@ -102,10 +105,10 @@ namespace NexusForever.Database.Character
                 .Max();
         }
 
-        public ulong GetNextDecorId()
+        public long GetNextDecorId()
         {
             using var context = new CharacterContext(config);
-            return context.ResidenceDecor
+            return (long) context.ResidenceDecor
                 .Select(r => r.DecorId)
                 .DefaultIfEmpty()
                 .Max();
@@ -141,6 +144,7 @@ namespace NexusForever.Database.Character
                     .ThenInclude(c => c.QuestObjective)
                 .Include(c => c.Entitlement)
                 .Include(c => c.Achievement)
+                .Include(c => c.Contact)
                 .Include(c => c.TradeskillMaterials)
                 .Include(c => c.Reputation)
                 .ToListAsync();
@@ -161,7 +165,7 @@ namespace NexusForever.Database.Character
                 .Include(r => r.Character)
                 .Include(r => r.Guild)
                 // only load residences where the owner character or guild hasn't been deleted
-                .Where(r => (r.OwnerId.HasValue && !r.Character.DeleteTime.HasValue) || (r.GuildOwnerId.HasValue && !r.Guild.DeleteTime.HasValue))
+                .Where(r => (r.OwnerId.HasValue && !r.Character.DeleteTime.HasValue) || (r.GuildOwnerId.HasValue && !r.Guild.DeleteTime.HasValue)).AsSplitQuery()
                 .ToList();
         }
 
@@ -201,6 +205,31 @@ namespace NexusForever.Database.Character
             return context.ChatChannel
                 .Include(c => c.Members)
                 .ToList();
+        }
+
+        /// <summary>
+        /// Used by the Global Contact Manager to get the next unique ID.
+        /// </summary>
+        public ulong? GetNextContactId()
+        {
+            using var context = new CharacterContext(config);
+
+            return context.CharacterContact.Select(r => r.Id)
+                .DefaultIfEmpty().Max(r => r);
+        }
+
+        public async Task<List<CharacterContactModel>> GetPendingContactRequests(ulong characterId)
+        {
+            // 0 = Friend
+            // 4 = FriendAndRival
+            // 8 = Account Friend
+            uint[] contactTypes = new uint[] { 0, 4, 8 };
+
+            using var context = new CharacterContext(config);
+
+            return await context.CharacterContact
+                .Where(c => c.ContactId == characterId && c.Accepted == 0 && contactTypes.Contains(c.Type))
+                .ToListAsync();
         }
 
         public List<CharacterCreateModel> GetCharacterCreationData()

@@ -13,6 +13,7 @@ using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Achievement;
 using NexusForever.WorldServer.Game.CharacterCache;
 using NexusForever.WorldServer.Game.Cinematic;
+using NexusForever.WorldServer.Game.Contact;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Movement;
 using NexusForever.WorldServer.Game.Entity.Network;
@@ -67,6 +68,7 @@ namespace NexusForever.WorldServer
             CharacterManager.Instance.Initialise(); // must be initialised before residences
             GlobalResidenceManager.Instance.Initialise();
             GlobalGuildManager.Instance.ValidateCommunityResidences();
+            GlobalContactManager.Instance.Initialise();
 
             AssetManager.Instance.Initialise();
             ItemManager.Instance.Initialise();

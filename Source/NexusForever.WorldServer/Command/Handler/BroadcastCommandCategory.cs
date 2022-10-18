@@ -6,12 +6,15 @@ using NexusForever.WorldServer.Game.RBAC.Static;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NLog;
+using System;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
     [Command(Permission.Broadcast, "A collection of commands to broadcast server wide messages.", "broadcast")]
     public class BroadcastCommandCategory : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [Command(Permission.BroadcastMessage, "Broadcast message to all players on the server.", "message")]
         public void HandleBroadcastMessage(ICommandContext context,
             [Parameter("Tier of the message being broadcast.", ParameterFlags.None, typeof(EnumParameterConverter<BroadcastTier>))]
@@ -23,7 +26,7 @@ namespace NexusForever.WorldServer.Command.Handler
             {
                 session.EnqueueMessageEncrypted(new ServerRealmBroadcast
                 {
-                    Tier    = tier,
+                    Tier = tier,
                     Message = message
                 });
             }

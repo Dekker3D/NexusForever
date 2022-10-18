@@ -48,7 +48,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            context.GetTargetOrInvoker<Player>().QuestManager.QuestAdd(info);
+            context.InvokingPlayer.QuestManager.QuestAdd(info);
         }
 
         [Command(Permission.QuestAchieve, "Achieve an existing quest by completing all objectives for character.", "achieve")]
@@ -63,7 +63,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            context.GetTargetOrInvoker<Player>().QuestManager.QuestAchieve(questId);
+            context.InvokingPlayer.QuestManager.QuestAchieve(questId);
         }
 
         [Command(Permission.QuestAchieveObjective, "Achieve a single objective for an existing quest for character.", "achieveobjective")]
@@ -80,7 +80,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            context.GetTargetOrInvoker<Player>().QuestManager.QuestAchieveObjective(questId, index);
+            context.InvokingPlayer.QuestManager.QuestAchieveObjective(questId, index);
         }
 
         [Command(Permission.QuestObjective, "Update all quest objectives with type for character.", "objective")]
@@ -93,7 +93,7 @@ namespace NexusForever.WorldServer.Command.Handler
             uint? progress)
         {
             progress ??= 1u;
-            context.GetTargetOrInvoker<Player>().QuestManager.ObjectiveUpdate(type, data, progress.Value);
+            context.InvokingPlayer.QuestManager.ObjectiveUpdate(type, data, progress.Value);
         }
 
         [Command(Permission.QuestKill, "Update all quest objectives that require a kill with the given creature id.", "kill")]
@@ -105,7 +105,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             quantity ??= 1u;
 
-            var target = context.GetTargetOrInvoker<Player>();
+            var target = context.InvokingPlayer;
             target.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature, creatureId, quantity.Value);
             target.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature2, creatureId, quantity.Value);
 

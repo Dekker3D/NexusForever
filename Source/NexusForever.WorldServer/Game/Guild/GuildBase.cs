@@ -371,6 +371,7 @@ namespace NexusForever.WorldServer.Game.Guild
 
         private void SendGuildRoster(WorldSession session)
         {
+            log.Info($"In GuildBase.SendGuildRoster() : Guild ID = {Id}");
             session.EnqueueMessageEncrypted(new ServerGuildRoster
             {
                 GuildRealm = WorldServer.RealmId,
@@ -807,5 +808,10 @@ namespace NexusForever.WorldServer.Game.Guild
         {
             return GetEnumerator();
         }
+
+        /// <summary>
+        /// Return a <see cref="GuildData"/> packet of this <see cref="GuildBase"/>
+        /// </summary>
+        public abstract GuildData BuildGuildDataPacket();
     }
 }

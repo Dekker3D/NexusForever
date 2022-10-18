@@ -29,6 +29,8 @@ namespace NexusForever.Shared.Network
         /// </remarks>
         public SocketHeartbeat Heartbeat { get; } = new();
 
+        public DateTime AcceptTime { get; private set; }
+
         private Socket socket;
         private readonly byte[] buffer = new byte[4096];
         private int bufferOffset;
@@ -42,6 +44,8 @@ namespace NexusForever.Shared.Network
         {
             if (socket != null)
                 throw new InvalidOperationException();
+
+            AcceptTime = DateTime.Now;
 
             Id = Guid.NewGuid().ToString();
 
@@ -73,7 +77,7 @@ namespace NexusForever.Shared.Network
             if (!disconnectState.HasValue)
                 Heartbeat.Update(lastTick);
 
-            if (Heartbeat.Flatline || disconnectState == DisconnectState.Pending)
+            if ((Heartbeat.Flatline && disconnectState != DisconnectState.Complete) || disconnectState == DisconnectState.Pending)
             {
                 // no defibrillator is going to save this session
                 if (Heartbeat.Flatline)
@@ -81,6 +85,11 @@ namespace NexusForever.Shared.Network
 
                 OnDisconnect();
             }
+        }
+
+        public virtual void ReportLoginFinish()
+        {
+            log.Trace($"New session; login took {DateTime.Now.Subtract(AcceptTime).TotalMilliseconds} ms.");
         }
 
         protected virtual void OnDisconnect()
@@ -147,6 +156,13 @@ namespace NexusForever.Shared.Network
             {
                 ForceDisconnect();
             }
+        }
+
+        public bool IsLocalIp()
+        {
+            IPEndPoint ep = socket.RemoteEndPoint as IPEndPoint;
+            byte[] bytes = ep.Address.GetAddressBytes();
+            return (bytes[0] == 192 && bytes[1] == 168);
         }
 
         /// <summary>

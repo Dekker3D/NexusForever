@@ -22,6 +22,15 @@ namespace NexusForever.WorldServer
 
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
+        public static TimeSpan Uptime
+        {
+            get
+            {
+                return DateTime.UtcNow.Subtract(bootTime);
+            }
+        }
+        private static DateTime bootTime;
+
         /// <summary>
         /// Internal unique id of the realm.
         /// </summary>

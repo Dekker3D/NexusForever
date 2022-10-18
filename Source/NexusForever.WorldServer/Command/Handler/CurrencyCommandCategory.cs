@@ -7,12 +7,15 @@ using NexusForever.WorldServer.Game.Account.Static;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.RBAC.Static;
+using NLog;
+using System;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
     [Command(Permission.Currency, "A collection of commands to modify account and character currency.", "currency")]
     public class CurrencyCommandCategory : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [Command(Permission.CurrencyAccount, "A collection of commands to modify account currency.", "account")]
         public class CurrencyAccountCommandCategory : CommandCategory
         {
@@ -31,7 +34,7 @@ namespace NexusForever.WorldServer.Command.Handler
                     return;
                 }
 
-                context.GetTargetOrInvoker<Player>().Session.AccountCurrencyManager.CurrencyAddAmount(currencyId, amount);
+                context.InvokingPlayer.Session.AccountCurrencyManager.CurrencyAddAmount(currencyId, amount);
             }
 
             [Command(Permission.CurrencyAccountList, "List all account currency types", "list")]
@@ -60,7 +63,7 @@ namespace NexusForever.WorldServer.Command.Handler
                     return;
                 }
 
-                context.GetTargetOrInvoker<Player>().CurrencyManager.CurrencyAddAmount(currencyId, amount, true);
+                context.InvokingPlayer.CurrencyManager.CurrencyAddAmount(currencyId, amount, true);
             }
 
             [Command(Permission.CurrencyCharacterList, "List all currency types.", "list")]

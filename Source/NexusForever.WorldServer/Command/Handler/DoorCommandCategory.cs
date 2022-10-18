@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NexusForever.WorldServer.Command.Context;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Map.Search;
 using NexusForever.WorldServer.Game.RBAC.Static;
+using NLog;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -10,6 +12,7 @@ namespace NexusForever.WorldServer.Command.Handler
     [CommandTarget(typeof(Player))]
     public class DoorCommandCategory : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [Command(Permission.DoorOpen, "Open all doors within a specified range.", "open")]
         public void HandleDoorOpen(ICommandContext context,
             [Parameter("Distance to search for doors to open.")]
@@ -17,7 +20,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             searchRange ??= 10f;
 
-            Player player = context.GetTargetOrInvoker<Player>();
+            Player player = context.InvokingPlayer;
             player.Map.Search(
                 player.Position,
                 searchRange.Value,
@@ -40,7 +43,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             searchRange ??= 10f;
 
-            Player player = context.GetTargetOrInvoker<Player>();
+            Player player = context.InvokingPlayer;
             player.Map.Search(
                 player.Position,
                 searchRange.Value,

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,7 +39,7 @@ namespace NexusForever.WorldServer.Game.Map
 
         protected readonly ConcurrentQueue<IGridAction> pendingActions = new();
 
-        private readonly QueuedCounter entityCounter = new();
+        protected readonly QueuedCounter entityCounter = new();
         protected readonly Dictionary<uint /*guid*/, GridEntity> entities = new();
         private EntityCache entityCache;
 
@@ -106,6 +107,11 @@ namespace NexusForever.WorldServer.Game.Map
                         RelocateEntity(actionRelocate.Entity, actionRelocate.Vector);
                         break;
                     case GridActionRemove actionRemove:
+                        if(actionRemove.Entity.Map == null)
+                        {
+                            log.Info("Tried to remove entity that was already removed.");
+                            break;
+                        }
                         RemoveEntity(actionRemove.Entity);
                         break;
                 }
@@ -167,6 +173,10 @@ namespace NexusForever.WorldServer.Game.Map
                     Vector = position.Position
                 });
             }
+        }
+
+        public virtual void OnRemoveFromMap(Player player)
+        {
         }
 
         /// <summary>
@@ -231,7 +241,7 @@ namespace NexusForever.WorldServer.Game.Map
         /// <summary>
         /// Return all <see cref="GridEntity"/>'s from <see cref="Vector3"/> in range that satisfy <see cref="ISearchCheck"/>.
         /// </summary>
-        public void Search(Vector3 vector, float radius, ISearchCheck check, out List<GridEntity> intersectedEntities)
+        public virtual void Search(Vector3 vector, float radius, ISearchCheck check, out List<GridEntity> intersectedEntities, GridEntity searcher = null)
         {
             // negative radius is unlimited distance
             if (radius < 0)
@@ -408,7 +418,7 @@ namespace NexusForever.WorldServer.Game.Map
             MapGrid grid = GetGrid(vector);
             grid.AddEntity(entity, vector);
 
-            uint guid = entityCounter.Dequeue();
+            uint guid = entity.GuidLocked ? entity.Guid : entityCounter.Dequeue();
             entities.Add(guid, entity);
 
             entity.OnAddToMap(this, guid, vector);
@@ -418,11 +428,16 @@ namespace NexusForever.WorldServer.Game.Map
 
         protected virtual void RemoveEntity(GridEntity entity)
         {
+            string playerText = "";
+            if(entity is Player removedPlayer)
+            {
+                playerText = $" Player name is {removedPlayer.Name}.";
+            }
+            log.Trace($"Removing entity {entity.Guid} from map {Entry.Id}; Map is {(entity.Map != null ? "not null" : "null")}.{playerText}");
+
             Debug.Assert(entity.Map != null);
 
             GetGrid(entity.Position).RemoveEntity(entity);
-
-            log.Trace($"Removed entity {entity.Guid} from map {Entry.Id}.");
 
             entityCounter.Enqueue(entity.Guid);
             entities.Remove(entity.Guid);
@@ -432,22 +447,36 @@ namespace NexusForever.WorldServer.Game.Map
 
         protected virtual void RelocateEntity(GridEntity entity, Vector3 vector)
         {
-            Debug.Assert(entity.Map != null);
-
-            ActivateGrid(entity, vector);
-            MapGrid newGrid = GetGrid(vector);
-            MapGrid oldGrid = GetGrid(entity.Position);
-
-            if (newGrid.Coord.X != oldGrid.Coord.X
-                || newGrid.Coord.Z != oldGrid.Coord.Z)
+            //Debug.Assert(entity.Map != null);
+            try
             {
-                oldGrid.RemoveEntity(entity);
-                newGrid.AddEntity(entity, vector);
-            }
-            else
-                oldGrid.RelocateEntity(entity, vector);
+                ActivateGrid(entity, vector);
+                MapGrid newGrid = GetGrid(vector);
+                MapGrid oldGrid = GetGrid(entity.Position);
 
-            entity.OnRelocate(vector);
+                if (newGrid.Coord.X != oldGrid.Coord.X
+                    || newGrid.Coord.Z != oldGrid.Coord.Z)
+                {
+                    oldGrid.RemoveEntity(entity);
+                    newGrid.AddEntity(entity, vector);
+                }
+                else
+                    oldGrid.RelocateEntity(entity, vector);
+
+                if (entity.Map != null)
+                {
+                    entity.OnRelocate(vector);
+                }
+                else
+                {
+                    throw new NullReferenceException($"Entity (guid {entity.Guid}) BaseMap was null!");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error($"Exception caught while invoking BaseMap.RelocateEntity! :\n{e}");
+            }
+
         }
 
         /// <summary>

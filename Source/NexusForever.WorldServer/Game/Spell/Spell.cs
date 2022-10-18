@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NexusForever.Shared;
+using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Prerequisite;
@@ -18,11 +19,11 @@ namespace NexusForever.WorldServer.Game.Spell
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
         public uint CastingId { get; }
-        public bool IsCasting => status == SpellStatus.Casting;
+        public bool IsCasting => status == SpellStatus.Casting && parameters.UserInitiatedSpellCast;
         public bool IsFinished => status == SpellStatus.Finished;
 
         private readonly UnitEntity caster;
-        private readonly SpellParameters parameters;
+        public readonly SpellParameters parameters;
         private SpellStatus status;
 
         private readonly List<SpellTargetInfo> targets = new();
@@ -45,14 +46,15 @@ namespace NexusForever.WorldServer.Game.Spell
         {
             events.Update(lastTick);
 
-            if (status == SpellStatus.Executing && !events.HasPendingEvent)
+            if ((status == SpellStatus.Executing && !events.HasPendingEvent && !parameters.ForceCancelOnly) ||
+                status == SpellStatus.Finishing)
             {
                 // spell effects have finished executing
                 status = SpellStatus.Finished;
                 log.Trace($"Spell {parameters.SpellInfo.Entry.Id} has finished.");
 
                 // TODO: add a timer to count down on the Effect before sending the finish - sending the finish will e.g. wear off the buff
-                //SendSpellFinish();
+                SendSpellFinish();
             }
         }
 
@@ -194,6 +196,11 @@ namespace NexusForever.WorldServer.Game.Spell
                     CastResult     = result,
                     CancelCast     = true
                 });
+
+                if (result == CastResult.CasterMovement)
+                    player?.SpellManager.SetGlobalSpellCooldown(0d);
+
+                SendSpellCastResult(result);
             }
 
             events.CancelEvents();
@@ -214,6 +221,7 @@ namespace NexusForever.WorldServer.Game.Spell
             SelectTargets();
             ExecuteEffects();
             CostSpell();
+            HandleVisual();
 
             SendSpellGo();
         }
@@ -224,9 +232,47 @@ namespace NexusForever.WorldServer.Game.Spell
                 parameters.CharacterSpell.UseCharge();
         }
 
+        private void HandleVisual()
+        {
+            foreach (Spell4VisualEntry visual in parameters.SpellInfo.Visuals)
+            {
+                VisualEffectEntry visualEffect = GameTableManager.Instance.VisualEffect.GetEntry(visual.VisualEffectId);
+                if (visualEffect == null)
+                    throw new InvalidOperationException($"VisualEffectEntry with ID {visual.VisualEffectId} does not exist");
+
+                if (visualEffect.VisualType == 0 && visualEffect.ModelSequenceIdTarget00 > 0)
+                {
+                    ushort emotesId = (ushort)(GameTableManager.Instance.Emotes.Entries.FirstOrDefault(i => i.NoArgAnim == visualEffect.ModelSequenceIdTarget00)?.Id ?? 0u);
+
+                    // TODO: Adjust logic as necessary. It's possible that there are other packets used instead of the ServerEntityEmote to have them "play" effects appropriately.
+                    if (emotesId == 0)
+                        return;
+
+                    caster.EnqueueToVisible(new ServerEntityEmote
+                    {
+                        EmotesId = emotesId,
+                        SourceUnitId = caster.Guid
+                    }, true);
+                    
+                    if (visualEffect.Duration > 0)
+                        events.EnqueueEvent(new SpellEvent(visualEffect.Duration / 1000d, () => 
+                        {
+                            caster.EnqueueToVisible(new ServerEntityEmote
+                            {
+                                EmotesId = 0,
+                                SourceUnitId = caster.Guid
+                            }, true);
+                        }));
+                }
+            }
+        }
+
         private void SelectTargets()
         {
+            targets.Clear();
+
             targets.Add(new SpellTargetInfo(SpellEffectTargetFlags.Caster, caster));
+            targets.Add(new SpellTargetInfo(SpellEffectTargetFlags.TargetOrInvoker, parameters.OverrideTargetId > 0 ? caster.Map.GetEntity<UnitEntity>(parameters.OverrideTargetId) : (caster.TargetGuid > 0 ? caster.Map.GetEntity<UnitEntity>(caster.TargetGuid) : caster)));
 
             if (caster is Player)
                 InitialiseTelegraphs();
@@ -262,13 +308,25 @@ namespace NexusForever.WorldServer.Game.Spell
                         handler.Invoke(this, effectTarget.Entity, info);
                     }
                 }
+
+                if (spell4EffectsEntry.DurationTime == 0u && ((SpellEffectFlags)spell4EffectsEntry.Flags & SpellEffectFlags.CancelOnly) != 0)
+                    parameters.ForceCancelOnly = true;
             }
+        }
+
+        public void Finish()
+        {
+            if (status == SpellStatus.Finished)
+                return;
+
+            events.CancelEvents();
+            status = SpellStatus.Finishing;
         }
 
         public bool IsMovingInterrupted()
         {
             // TODO: implement correctly
-            return parameters.SpellInfo.Entry.CastTime > 0;
+            return parameters.UserInitiatedSpellCast && parameters.SpellInfo.BaseInfo.SpellType.Id != 5 && parameters.SpellInfo.Entry.CastTime > 0;
         }
 
         private void SendSpellCastResult(CastResult castResult)

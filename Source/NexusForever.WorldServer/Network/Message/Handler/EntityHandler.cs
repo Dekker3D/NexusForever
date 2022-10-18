@@ -10,6 +10,7 @@ using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Game.Quest.Static;
 using NexusForever.WorldServer.Game;
 using NLog;
+using System;
 
 namespace NexusForever.WorldServer.Network.Message.Handler
 {
@@ -30,58 +31,59 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             if (mover == null)
                 return;
 
-            foreach ((EntityCommand id, IEntityCommandModel command) in entityCommand.Commands)
-            {
-                switch (command)
-                {
-                    case SetPositionCommand setPosition:
-                    {
-                        // this is causing issues after moving to soon after mounting:
-                        // session.Player.CancelSpellsOnMove();
-                        mover.Relocate(setPosition.Position.Vector);
-                        break;
-                    }
-                    case SetRotationCommand setRotation:
-                        mover.Rotation = setRotation.Position.Vector;
-                        break;
-                }
-            }
+            if (session.Player.IsEmoting)
+                session.Player.IsEmoting = false;
 
-            mover.EnqueueToVisible(new ServerEntityCommand
+            try
             {
-                Guid     = mover.Guid,
-                Time     = entityCommand.Time,
-                ServerControlled = false,
-                Commands = entityCommand.Commands
-            });
+                mover.MovementManager.HandleClientEntityCommands(entityCommand.Commands, entityCommand.Time);
+            }
+            catch (NullReferenceException nre)
+            {
+                log.Error($"Exception caught while invoking EntityHandler.HandleEntityCommand - Invoking player is null! :\n{nre}");
+            }
         }
 
         [MessageHandler(GameMessageOpcode.ClientActivateUnit)]
         public static void HandleActivateUnit(WorldSession session, ClientActivateUnit unit)
         {
-            WorldEntity entity = session.Player.GetVisible<WorldEntity>(unit.UnitId);
-            if (entity == null)
-                throw new InvalidPacketValueException();
+            try
+            {
+                WorldEntity entity = session.Player.GetVisible<WorldEntity>(unit.UnitId);
+                if (entity == null)
+                    throw new InvalidPacketValueException();
 
-            // TODO: sanity check for range etc.
+                // TODO: sanity check for range etc.
 
-            entity.OnActivate(session.Player);
+                entity.OnActivate(session.Player);
+            }
+            catch (Exception e)
+            {
+                session.Player.SendSystemMessage("Activated entity does not exist!");
+            }
         }
 
         [MessageHandler(GameMessageOpcode.ClientActivateUnitCast)]
         public static void HandleActivateUnitCast(WorldSession session, ClientActivateUnitCast unit)
         {
-            WorldEntity entity = session.Player.GetVisible<WorldEntity>(unit.ActivateUnitId);
-            if (entity == null)
-                throw new InvalidPacketValueException();
+            try
+            {
+                WorldEntity entity = session.Player.GetVisible<WorldEntity>(unit.ActivateUnitId);
+                if (entity == null)
+                    throw new InvalidPacketValueException();
 
-            // TODO: sanity check for range etc.
+                // TODO: sanity check for range etc.
 
-            session.Player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, entity.CreatureId, 1u);
-            foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(entity.CreatureId) ?? Enumerable.Empty<uint>())
-                session.Player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroup, targetGroupId, 1u); // Updates the objective, but seems to disable all the other targets. TODO: Investigate
+                session.Player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, entity.CreatureId, 1u);
+                foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(entity.CreatureId) ?? Enumerable.Empty<uint>())
+                    session.Player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroup, targetGroupId, 1u); // Updates the objective, but seems to disable all the other targets. TODO: Investigate
             
-            entity.OnActivateCast(session.Player);
+                entity.OnActivateCast(session.Player);
+            }
+            catch (Exception e)
+            {
+                session.Player.SendSystemMessage("Activated entity does not exist!");
+            }
         }
 
         [MessageHandler(GameMessageOpcode.ClientEntityInteract)]

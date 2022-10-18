@@ -11,9 +11,13 @@
         Reputation      = 5,
         Quest           = 6,
         Achievement     = 7,
+        Gender          = 10,
         Prerequisite    = 11,
+        HasBuff         = 15,
+        Zone            = 26,
         Path            = 52,
         Vital           = 73,
+        Disguise        = 105,
         SpellObj        = 129,
 		    /// <summary>
         /// Checks for an ObjectId, which is a hashed petflair id.
@@ -22,14 +26,16 @@
         /// <summary>
         /// Used for Mount checks
         /// </summary>
-        Unknown194      = 194,
+        GroundMountArea = 194,
         /// <summary>
         /// Used for Mount checks
         /// </summary>
-        Unknown195      = 195,
+        HoverboardArea  = 195,
         SpellBaseId     = 214,
         Plane           = 232,
         BaseFaction     = 250,
+        Unhealthy       = 269,
+        Loyalty         = 270,
         PurchasedTitle  = 288
     }
 }

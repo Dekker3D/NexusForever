@@ -1,6 +1,9 @@
 ﻿using NexusForever.Database.Character.Model;
 using NexusForever.WorldServer.Game.Guild.Static;
 using NexusForever.WorldServer.Game.Social.Static;
+using NexusForever.WorldServer.Network.Message.Model.Shared;
+using System;
+using System.Linq;
 
 namespace NexusForever.WorldServer.Game.Guild
 {
@@ -24,6 +27,26 @@ namespace NexusForever.WorldServer.Game.Guild
             : base(GuildType.WarParty, name, leaderRankName, councilRankName, memberRankName)
         {
             InitialiseChatChannels(ChatChannelType.WarParty, ChatChannelType.WarPartyOfficer);
+        }
+
+        /// <summary>
+        /// Return a <see cref="GuildData"/> packet of this <see cref="WarParty"/>
+        /// </summary>
+        public override GuildData BuildGuildDataPacket()
+        {
+            return new GuildData
+            {
+                GuildId = Id,
+                GuildName = Name,
+                Type = Type,
+                Ranks = GetGuildRanksPackets().ToList(),
+                MemberCount = (uint)members.Count,
+                OnlineMemberCount = (uint)onlineMembers.Count,
+                GuildInfo =
+                {
+                    GuildCreationDateInDays = (float)DateTime.Now.Subtract(CreateTime).TotalDays * -1f
+                }
+            };
         }
     }
 }

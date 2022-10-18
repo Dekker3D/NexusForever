@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Numerics;
 using NexusForever.Shared;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
+using NexusForever.WorldServer.Game.Housing;
 using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.Map.Search;
 
@@ -13,8 +15,20 @@ namespace NexusForever.WorldServer.Game.Entity
     public abstract class GridEntity : IUpdate
     {
         public uint Guid { get; protected set; }
+        public bool GuidLocked { get; protected set; } = false;
         public BaseMap Map { get; private set; }
         public WorldZoneEntry Zone { get; private set; }
+        public Residence CurrentResidence
+        {
+            get
+            {
+                if (Map is ResidenceMapInstance rmap)
+                {
+                    return rmap.GetResidenceByZone(Zone);
+                }
+                return null;
+            }
+        }
         public Vector3 Position { get; protected set; }
 
         public MapInfo PreviousMap { get; private set; }
@@ -157,6 +171,10 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             if (!visibleEntities.TryGetValue(guid, out GridEntity entity))
                 return null;
+
+            if (entity is not T)
+                return null;
+
             return (T)entity;
         }
 
@@ -176,7 +194,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         private void UpdateVision()
         {
-            Map.Search(Position, Map.VisionRange, new SearchCheckRange(Position, Map.VisionRange), out List<GridEntity> intersectedEntities);
+            Map.Search(Position, Map.VisionRange, new SearchCheckRange(Position, Map.VisionRange), out List<GridEntity> intersectedEntities, this);
 
             // new entities now in vision range
             foreach (GridEntity entity in intersectedEntities.Except(visibleEntities.Values))
@@ -225,5 +243,22 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         public abstract void Update(double lastTick);
+
+        public void SetPosition(Vector3 position)
+        {
+            if (Map != null)
+                throw new InvalidOperationException($"Cannot directly set Position of Entity if they are placed by a Map.");
+
+            Position = position;
+        }
+
+        public void SetGuid(uint guid)
+        {
+            if (Guid != 0u)
+                throw new InvalidOperationException($"Cannot directly set Guid of Entity if they are placed by a Map.");
+
+            Guid = guid;
+            GuidLocked = true;
+        }
     }
 }

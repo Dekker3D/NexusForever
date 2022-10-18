@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Command.Context;
@@ -8,6 +9,7 @@ using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.RBAC.Static;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Game.Social.Static;
+using NLog;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -15,6 +17,7 @@ namespace NexusForever.WorldServer.Command.Handler
     [CommandTarget(typeof(Player))]
     public class ItemCommandCategory : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [Command(Permission.ItemAdd, "Add an item to inventory, optionally specifying quantity and charges.", "add")]
         public void HandleItemAdd(ICommandContext context,
             [Parameter("Item id to create.")]
@@ -26,7 +29,8 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             quantity ??= 1u;
             charges ??= 1u;
-            context.GetTargetOrInvoker<Player>().Inventory.ItemCreate(InventoryLocation.Inventory, itemId, quantity.Value, ItemUpdateReason.Cheat, charges.Value);
+            log.Info($"{context.InvokingPlayer.Name} requesting to add item ID {itemId} (x{quantity}, {charges} charges).");
+            context.InvokingPlayer.Inventory.ItemCreate(InventoryLocation.Inventory, itemId, quantity.Value, ItemUpdateReason.Cheat, charges.Value);
         }
 
         [Command(Permission.ItemLookup, "Lookup an item by partial name.", "lookup")]
@@ -49,7 +53,7 @@ namespace NexusForever.WorldServer.Command.Handler
 
             context.SendMessage($"Item lookup results for '{name}' ({searchResults.Count}):");
 
-            var target = context.GetTargetOrInvoker<Player>();
+            var target = context.InvokingPlayer;
             foreach (Item2Entry itemEntry in searchResults)
             {
                 var builder = new ChatMessageBuilder

@@ -36,8 +36,11 @@ namespace NexusForever.WorldServer.Game
 
         private ImmutableDictionary<(Race, Faction, CharacterCreationStart), Location> characterCreationData;
         private ImmutableDictionary<uint, ImmutableList<CharacterCustomizationEntry>> characterCustomisations;
+        private ImmutableList<PropertyValue> characterBaseProperties;
+        private ImmutableDictionary<Class, ImmutableList<PropertyValue>> characterClassBaseProperties;
 
         private ImmutableDictionary<uint, ImmutableList<ItemDisplaySourceEntryEntry>> itemDisplaySourcesEntry;
+        private ImmutableDictionary<uint /*item2CategoryId*/, float /*modifier*/> itemArmorModifiers;
 
         private ImmutableDictionary</*zoneId*/uint, /*tutorialId*/uint> zoneTutorials;
         private ImmutableDictionary</*creatureId*/uint, /*targetGroupIds*/ImmutableList<uint>> creatureAssociatedTargetGroups;
@@ -55,8 +58,11 @@ namespace NexusForever.WorldServer.Game
 
             CacheCharacterCreate();
             CacheCharacterCustomisations();
+            CacheCharacterBaseProperties();
+            CacheCharacterClassBaseProperties();
             CacheInventoryBagCapacities();
             CacheItemDisplaySourceEntries();
+            CacheItemArmorModifiers();
             CacheTutorials();
             CacheCreatureTargetGroups();
             CacheRewardPropertiesByTier();
@@ -93,7 +99,12 @@ namespace NexusForever.WorldServer.Game
             var entries = new Dictionary<uint, List<CharacterCustomizationEntry>>();
             foreach (CharacterCustomizationEntry entry in GameTableManager.Instance.CharacterCustomization.Entries)
             {
-                uint primaryKey = (entry.Value00 << 24) | (entry.CharacterCustomizationLabelId00 << 16) | (entry.Gender << 8) | entry.RaceId;
+                uint primaryKey;
+                if (entry.CharacterCustomizationLabelId00 == 0 && entry.CharacterCustomizationLabelId01 > 0)
+                    primaryKey = (entry.Value01 << 24) | (entry.CharacterCustomizationLabelId01 << 16) | (entry.Gender << 8) | entry.RaceId;
+                else
+                    primaryKey = (entry.Value00 << 24) | (entry.CharacterCustomizationLabelId00 << 16) | (entry.Gender << 8) | entry.RaceId;
+
                 if (!entries.ContainsKey(primaryKey))
                     entries.Add(primaryKey, new List<CharacterCustomizationEntry>());
 
@@ -101,6 +112,102 @@ namespace NexusForever.WorldServer.Game
             }
 
             characterCustomisations = entries.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
+        }
+
+        private void CacheCharacterBaseProperties()
+        {
+            var entries = ImmutableList.CreateBuilder<PropertyValue>();
+            entries.Add(new PropertyValue(Property.Strength, 0, 0));
+            entries.Add(new PropertyValue(Property.Dexterity, 0, 0));
+            entries.Add(new PropertyValue(Property.Technology, 0, 0));
+            entries.Add(new PropertyValue(Property.Magic, 0, 0));
+            entries.Add(new PropertyValue(Property.Wisdom, 0, 0));
+            entries.Add(new PropertyValue(Property.BaseHealth, 200, 200));
+            entries.Add(new PropertyValue(Property.ResourceMax0, 500, 500));
+            entries.Add(new PropertyValue(Property.ResourceRegenMultiplier0, 0.0225f, 0.0225f));
+            entries.Add(new PropertyValue(Property.AssaultRating, 18, 18));
+            entries.Add(new PropertyValue(Property.SupportRating, 18, 18));
+            entries.Add(new PropertyValue(Property.ResourceMax7, 200, 200));
+            entries.Add(new PropertyValue(Property.ResourceRegenMultiplier7, 0.045f, 0.045f));
+            entries.Add(new PropertyValue(Property.MoveSpeedMultiplier, 1, 1));
+            entries.Add(new PropertyValue(Property.BaseAvoidChance, 0.05f, 0.05f));
+            entries.Add(new PropertyValue(Property.BaseCritChance, 0.05f, 0.05f));
+            entries.Add(new PropertyValue(Property.BaseFocusRecoveryInCombat, 0, 0));
+            entries.Add(new PropertyValue(Property.BaseFocusRecoveryOutofCombat, 0, 0));
+            entries.Add(new PropertyValue(Property.FrictionMax, 1f, 1f));
+            entries.Add(new PropertyValue(Property.BaseMultiHitAmount, 0.3f, 0.3f));
+            entries.Add(new PropertyValue(Property.JumpHeight, 5f, 5f));
+            entries.Add(new PropertyValue(Property.GravityMultiplier, 0.8f, 0.8f));
+            entries.Add(new PropertyValue(Property.DamageTakenOffsetPhysical, 1, 1));
+            entries.Add(new PropertyValue(Property.DamageTakenOffsetTech, 1, 1));
+            entries.Add(new PropertyValue(Property.DamageTakenOffsetMagic, 1, 1));
+            entries.Add(new PropertyValue(Property.BaseMultiHitChance, 0.05f, 0.05f));
+            entries.Add(new PropertyValue(Property.BaseDamageReflectAmount, 0.05f, 0.05f));
+            entries.Add(new PropertyValue(Property.SlowFallMultiplier, 1f, 1f));
+            entries.Add(new PropertyValue(Property.MountSpeedMultiplier, 2, 2));
+            entries.Add(new PropertyValue(Property.BaseGlanceAmount, 0.3f, 0.3f));
+
+            characterBaseProperties = entries.ToImmutable();
+        }
+
+        private void CacheCharacterClassBaseProperties()
+        {
+            ImmutableDictionary<Class, ImmutableList<PropertyValue>>.Builder entries = ImmutableDictionary.CreateBuilder<Class, ImmutableList<PropertyValue>>();
+
+            { // Warrior
+                ImmutableList<PropertyValue>.Builder propertyList = ImmutableList.CreateBuilder<PropertyValue>();
+                propertyList.Add(new PropertyValue(Property.ResourceMax1, 1000, 1000));
+                propertyList.Add(new PropertyValue(Property.ResourceRegenMultiplier1, 1, 1));
+                ImmutableList<PropertyValue> classProperties = propertyList.ToImmutable();
+                entries.Add(Class.Warrior, classProperties);
+            }
+
+            { // Engineer
+                ImmutableList<PropertyValue>.Builder propertyList = ImmutableList.CreateBuilder<PropertyValue>();
+                propertyList.Add(new PropertyValue(Property.ResourceMax1, 100, 100));
+                ImmutableList<PropertyValue> classProperties = propertyList.ToImmutable();
+                entries.Add(Class.Engineer, classProperties);
+            }
+
+            { // Best class
+                ImmutableList<PropertyValue>.Builder propertyList = ImmutableList.CreateBuilder<PropertyValue>();
+                propertyList.Add(new PropertyValue(Property.ResourceMax1, 5, 5));
+                propertyList.Add(new PropertyValue(Property.BaseFocusPool, 1000, 1000));
+                propertyList.Add(new PropertyValue(Property.BaseFocusRecoveryInCombat, 0.005f, 0.005f));
+                propertyList.Add(new PropertyValue(Property.BaseFocusRecoveryOutofCombat, 0.02f, 0.02f));
+                ImmutableList<PropertyValue> classProperties = propertyList.ToImmutable();
+                entries.Add(Class.Esper, classProperties);
+            }
+
+            { // Medic
+                ImmutableList<PropertyValue>.Builder propertyList = ImmutableList.CreateBuilder<PropertyValue>();
+                propertyList.Add(new PropertyValue(Property.ResourceMax1, 4, 4));
+                propertyList.Add(new PropertyValue(Property.BaseFocusPool, 1000, 1000));
+                propertyList.Add(new PropertyValue(Property.BaseFocusRecoveryInCombat, 0.005f, 0.005f));
+                propertyList.Add(new PropertyValue(Property.BaseFocusRecoveryOutofCombat, 0.02f, 0.02f));
+                ImmutableList<PropertyValue> classProperties = propertyList.ToImmutable();
+                entries.Add(Class.Medic, classProperties);
+            }
+
+            { // Stalker
+                ImmutableList<PropertyValue>.Builder propertyList = ImmutableList.CreateBuilder<PropertyValue>();
+                propertyList.Add(new PropertyValue(Property.ResourceMax3, 100, 100));
+                propertyList.Add(new PropertyValue(Property.ResourceRegenMultiplier3, 0.035f, 0.035f));
+                ImmutableList<PropertyValue> classProperties = propertyList.ToImmutable();
+                entries.Add(Class.Stalker, classProperties);
+            }
+
+            { // Spellslinger
+                ImmutableList<PropertyValue>.Builder propertyList = ImmutableList.CreateBuilder<PropertyValue>();
+                propertyList.Add(new PropertyValue(Property.ResourceMax4, 100, 100));
+                propertyList.Add(new PropertyValue(Property.BaseFocusPool, 1000, 1000));
+                propertyList.Add(new PropertyValue(Property.BaseFocusRecoveryInCombat, 0.005f, 0.005f));
+                propertyList.Add(new PropertyValue(Property.BaseFocusRecoveryOutofCombat, 0.02f, 0.02f));
+                ImmutableList<PropertyValue> classProperties = propertyList.ToImmutable();
+                entries.Add(Class.Spellslinger, classProperties);
+            }
+
+            characterClassBaseProperties = entries.ToImmutable();
         }
 
         public void CacheInventoryBagCapacities()
@@ -166,6 +273,15 @@ namespace NexusForever.WorldServer.Game
 
             creatureAssociatedTargetGroups = entries.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
         }
+        
+        private void CacheItemArmorModifiers()
+        {
+            var armorMods = ImmutableDictionary.CreateBuilder<uint, float>();
+            foreach (Item2CategoryEntry entry in GameTableManager.Instance.Item2Category.Entries.Where(i => i.Item2FamilyId == 1))
+                armorMods.Add(entry.Id, entry.ArmorModifier);
+
+            itemArmorModifiers = armorMods.ToImmutable();
+        }
 
         private void CacheRewardPropertiesByTier()
         {
@@ -197,6 +313,73 @@ namespace NexusForever.WorldServer.Game
         }
 
         /// <summary>
+        /// Returns an <see cref="ImmutableList[T]"/> containing all base <see cref="PropertyValue"/> for any character
+        /// </summary>
+        public ImmutableList<PropertyValue> GetCharacterBaseProperties()
+        {
+            return characterBaseProperties;
+        }
+
+        /// <summary>
+        /// Returns an <see cref="ImmutableList[T]"/> containing all base <see cref="PropertyValue"/> for a character class
+        /// </summary>
+        public ImmutableList<PropertyValue> GetCharacterClassBaseProperties(Class @class)
+        {
+            return characterClassBaseProperties.TryGetValue(@class, out ImmutableList<PropertyValue> propertyValues) ? propertyValues : null;
+        }
+        
+        /// <summary>
+        /// Returns matching <see cref="CharacterCustomizationEntry"/> given input parameters
+        /// </summary>
+        public IEnumerable<CharacterCustomizationEntry> GetCharacterCustomisation(Dictionary<uint, uint> customisations, uint race, uint sex, uint primaryLabel, uint primaryValue)
+        {
+            ImmutableList<CharacterCustomizationEntry> entries = GetPrimaryCharacterCustomisation(race, sex, primaryLabel, primaryValue);
+            if (entries == null)
+                return Enumerable.Empty<CharacterCustomizationEntry>();
+
+            List<CharacterCustomizationEntry> customizationEntries = new List<CharacterCustomizationEntry>();
+
+            // Customisation has multiple results, filter with a non-zero secondary KvP.
+            List<CharacterCustomizationEntry> primaryEntries = entries.Where(e => e.CharacterCustomizationLabelId01 != 0).ToList();
+            if (primaryEntries.Count > 0)
+            {
+                // This will check all entries where there is a primary AND secondary KvP.
+                foreach (CharacterCustomizationEntry customizationEntry in primaryEntries)
+                {
+                    // Missing primary KvP in table, skipping.
+                    if (customizationEntry.CharacterCustomizationLabelId00 == 0)
+                        continue;
+
+                    // Secondary KvP not found in customisation list, skipping.
+                    if (!customisations.ContainsKey(customizationEntry.CharacterCustomizationLabelId01))
+                        continue;
+
+                    // Returning match found for primary KvP and secondary KvP
+                    if (customisations[customizationEntry.CharacterCustomizationLabelId01] == customizationEntry.Value01)
+                        customizationEntries.Add(customizationEntry);
+                }
+
+                // Return the matching value when the primary KvP matching the table's secondary KvP
+                CharacterCustomizationEntry entry = entries.FirstOrDefault(e => e.CharacterCustomizationLabelId01 == primaryLabel && e.Value01 == primaryValue);
+                if (entry != null)
+                    customizationEntries.Add(entry);
+            }
+            if (customizationEntries.Count == 0)
+            {
+                // Return the matching value when the primary KvP matches the table's primary KvP, and no secondary KvP is present.
+                CharacterCustomizationEntry entry = entries.FirstOrDefault(e => e.CharacterCustomizationLabelId00 == primaryLabel && e.Value00 == primaryValue);
+                if (entry != null)
+                    customizationEntries.Add(entry);
+                else
+                {
+                    entry = entries.Single(e => e.CharacterCustomizationLabelId01 == 0 && e.Value01 == 0);
+                    if (entry != null)
+                        customizationEntries.Add(entry);
+                }
+            }
+
+            return customizationEntries;
+        }
         /// Returns an <see cref="ImmutableList{T}"/> containing all <see cref="ItemDisplaySourceEntryEntry"/>'s for the supplied itemSource.
         /// </summary>
         public ImmutableList<ItemDisplaySourceEntryEntry> GetItemDisplaySource(uint itemSource)

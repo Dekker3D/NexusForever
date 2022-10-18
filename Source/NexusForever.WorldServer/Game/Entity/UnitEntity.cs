@@ -8,6 +8,7 @@ using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.Spell;
 using NexusForever.WorldServer.Game.Spell.Static;
 using NexusForever.WorldServer.Game.Static;
+using NexusForever.WorldServer.Network.Message.Model;
 
 namespace NexusForever.WorldServer.Game.Entity
 {
@@ -133,6 +134,19 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         /// <summary>
+        /// Checks if this <see cref="UnitEntity"/> is currently casting a spell.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsCasting()
+        {
+            foreach (Spell.Spell spell in pendingSpells)
+                if (spell.IsCasting)
+                    return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Cancel a <see cref="Spell"/> based on its casting id
         /// </summary>
         /// <param name="castingId">Casting ID of the spell to cancel</param>
@@ -140,6 +154,34 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             Spell.Spell spell = pendingSpells.SingleOrDefault(s => s.CastingId == castingId);
             spell?.CancelCast(CastResult.SpellCancelled);
+            pendingSpells.Remove(spell);
+        }
+
+        public virtual void CancelEffect(uint castingId)
+        {
+            EnqueueToVisible(new ServerSpellFinish
+            {
+                ServerUniqueId = castingId
+            }, true);
+            foreach (var spell in pendingSpells.Where(s => s.CastingId == castingId))
+            {
+                RemoveSpellProperties(castingId);
+            }
+            pendingSpells.RemoveAll(s => s.CastingId == castingId);
+        }
+
+        public void WipeEffectsByID(uint spell4Id)
+        {
+            var list = GetPendingSpellsByID(spell4Id).ToList();
+            foreach (var spell in list)
+            {
+                CancelEffect(spell.CastingId);
+            }
+        }
+
+        public IEnumerable<Spell.Spell> GetPendingSpellsByID(uint spell4Id)
+        {
+            return pendingSpells.Where(s => s.parameters.SpellInfo.BaseInfo.Entry.Id == spell4Id || s.parameters.SpellInfo.Entry.Id == spell4Id);
         }
     }
 }

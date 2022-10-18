@@ -5,6 +5,8 @@ using NexusForever.WorldServer.Game.Achievement;
 using NexusForever.WorldServer.Game.Achievement.Static;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.RBAC.Static;
+using NLog;
+using System;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -12,6 +14,7 @@ namespace NexusForever.WorldServer.Command.Handler
     [CommandTarget(typeof(Player))]
     public class AchievementCommandCategory : CommandCategory
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [Command(Permission.AchievementUpdate, "Update achievement criteria for player.", "update")]
         public void HandleAchievementUpdate(ICommandContext context,
             [Parameter("Achievement criteria type to update.", ParameterFlags.None, typeof(EnumParameterConverter<AchievementType>))]
@@ -23,7 +26,8 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("Update count for matched criteria.")]
             uint count)
         {
-            Player player = context.GetTargetOrInvoker<Player>();
+            Player player = context.InvokingPlayer;
+            log.Info($"{player.Name} requesting achievement update type {type}.");
             player.AchievementManager.CheckAchievements(player, type, objectId, objectIdAlt, count);
         }
 
@@ -38,8 +42,8 @@ namespace NexusForever.WorldServer.Command.Handler
                 context.SendMessage($"Invalid achievement id {achievementId}!");
                 return;
             }
-
-            context.GetTargetOrInvoker<Player>().AchievementManager.GrantAchievement(achievementId);
+            log.Info($"{context.InvokingPlayer.Name} requesting achievement grant ID {achievementId}.");
+            context.InvokingPlayer.AchievementManager.GrantAchievement(achievementId);
         }
     }
 }

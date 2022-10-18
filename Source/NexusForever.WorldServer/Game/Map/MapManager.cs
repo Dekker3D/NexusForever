@@ -125,6 +125,15 @@ namespace NexusForever.WorldServer.Game.Map
             });
         }
 
+        public IMap GetMap(MapInfo info)
+        {
+            IMap map = CreateMap(info.Entry);
+                if (map is ResidenceInstancedMap rim)
+                    map = rim.GetInstance((ulong) info.InstanceId);
+
+            return map;
+        }
+
         /// <summary>
         /// Create base <see cref="IMap"/> for <see cref="WorldEntry"/>.
         /// </summary>

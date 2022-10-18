@@ -68,7 +68,18 @@ namespace NexusForever.Database.Auth
         public async Task<AccountModel> GetAccountBySessionKeyAsync(string email, string sessionKey)
         {
             using var context = new AuthContext(config);
-            return await context.Account
+            var account = await context.Account.SingleOrDefaultAsync(a => a.Email == email && a.SessionKey == sessionKey);
+            account.AccountCostumeUnlock            = context.AccountCostumeUnlock.Where(a => a.Id == account.Id).ToList();
+            account.AccountCurrency                 = context.AccountCurrency.Where(a => a.Id == account.Id).ToList();
+            account.AccountGenericUnlock            = context.AccountGenericUnlock.Where(a => a.Id == account.Id).ToList();
+            account.AccountKeybinding               = context.AccountKeybinding.Where(a => a.Id == account.Id).ToList();
+            account.AccountEntitlement              = context.AccountEntitlement.Where(a => a.Id == account.Id).ToList();
+            account.AccountPermission               = context.AccountPermission.Where(a => a.Id == account.Id).ToList();
+            account.AccountRole                     = context.AccountRole.Where(a => a.Id == account.Id).ToList();
+
+            return account;
+
+            /*return await context.Account
                 .AsSplitQuery()
                 .Include(a => a.AccountCostumeUnlock)
                 .Include(a => a.AccountCurrency)
@@ -77,7 +88,7 @@ namespace NexusForever.Database.Auth
                 .Include(a => a.AccountEntitlement)
                 .Include(a => a.AccountPermission)
                 .Include(a => a.AccountRole)
-                .SingleOrDefaultAsync(a => a.Email == email && a.SessionKey == sessionKey);
+                .SingleOrDefaultAsync(a => a.Email == email && a.SessionKey == sessionKey);*/
         }
 
         /// <summary>
@@ -94,6 +105,7 @@ namespace NexusForever.Database.Auth
         /// </summary>
         public void CreateAccount(string email, string s, string v, uint role)
         {
+            email = email.ToLower();
             if (AccountExists(email))
                 throw new InvalidOperationException($"Account with that username already exists.");
 
@@ -109,6 +121,23 @@ namespace NexusForever.Database.Auth
                 RoleId = role
             });
             context.Account.Add(model);
+
+            context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Change the password of an account.
+        /// </summary>
+        public void ChangeAccountPassword(string email, string s, string v)
+        {
+            email = email.ToLower();
+            if (!AccountExists(email))
+                throw new InvalidOperationException($"Account with that username already exists.");
+
+            using var context = new AuthContext(config);
+            AccountModel account = context.Account.SingleOrDefault(a => a.Email == email);
+            account.S = s;
+            account.V = v;
 
             context.SaveChanges();
         }

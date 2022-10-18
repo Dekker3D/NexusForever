@@ -12,7 +12,7 @@ namespace NexusForever.WorldServer.Game.Guild
 {
     public partial class Guild : GuildChat
     {
-        public override uint MaxMembers => 40u;
+        public override uint MaxMembers => 200u;
 
         public GuildStandard Standard { get; }
         public GuildAchievementManager AchievementManager { get; }
@@ -142,6 +142,29 @@ namespace NexusForever.WorldServer.Game.Guild
                 RemoveFlag(GuildFlag.Taxes);
 
             SendGuildFlagUpdate();
+        }
+        /// <summary>
+        /// Return a <see cref="GuildData"/> packet of this <see cref="Guild"/>
+        /// </summary>
+        public override GuildData BuildGuildDataPacket()
+        {
+            return new GuildData
+            {
+                GuildId = Id,
+                GuildName = Name,
+                Flags = Flags,
+                Type = Type,
+                Ranks = GetGuildRanksPackets().ToList(),
+                GuildStandard = Standard.Build(),
+                MemberCount = (uint)members.Count,
+                OnlineMemberCount = (uint)onlineMembers.Count,
+                GuildInfo =
+                {
+                    MessageOfTheDay = MessageOfTheDay,
+                    GuildInfo = AdditionalInfo,
+                    GuildCreationDateInDays = (float)DateTime.Now.Subtract(CreateTime).TotalDays * -1f
+                }
+            };
         }
     }
 }
