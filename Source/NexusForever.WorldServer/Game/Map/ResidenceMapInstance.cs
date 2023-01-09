@@ -1053,5 +1053,34 @@ namespace NexusForever.WorldServer.Game.Map
         {
             return residences.Values.FirstOrDefault();
         }
+
+        public static PropertyInfoId? GetPropertyInfoByZone(uint zoneId)
+        {
+            switch(zoneId)
+            {
+                case 1136:
+                    return PropertyInfoId.Residence;
+                case 1161:
+                    return PropertyInfoId.CommunityResidence1;
+                case 1162:
+                    return PropertyInfoId.CommunityResidence2;
+                case 1163:
+                    return PropertyInfoId.CommunityResidence3;
+                case 1164:
+                    return PropertyInfoId.CommunityResidence4;
+                case 1165:
+                    return PropertyInfoId.CommunityResidence5;
+                case 1265:
+                    return PropertyInfoId.Community;
+                default:
+                    return null;
+            }
+        }
+
+        public Residence GetResidenceByZone(uint zoneId)
+        {
+            PropertyInfoId? pii = GetPropertyInfoByZone(zoneId);
+            return residences.Values.Where(e => e.PropertyInfoId == pii).FirstOrDefault();
+        }
     }
 }

@@ -495,5 +495,16 @@ namespace NexusForever.WorldServer.Game.Housing
         {
             return plotPlacements.TryGetValue(index, out PlotPlacement placementInformation) ? placementInformation : null;
         }
+
+        public static Residence GetCurrentVisitedResidence(GridEntity entity)
+        {
+            ResidenceMapInstance map = entity?.Map as ResidenceMapInstance;
+            uint? zoneId = entity?.Zone?.Id;
+            if(zoneId == null)
+            {
+                return null;
+            }
+            return map?.GetResidenceByZone((uint)zoneId);
+        }
     }
 }

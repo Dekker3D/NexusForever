@@ -968,6 +968,14 @@ namespace NexusForever.WorldServer.Game.Housing
         /// </summary>
         public Plot GetPlot(byte plotIndex)
         {
+            return GetPlotByIndex(plotIndex);
+        }
+
+        /// <summary>
+        /// Return <see cref="Plot"/> at the supplied index.
+        /// </summary>
+        public Plot GetPlotByIndex(byte plotIndex)
+        {
             return plots.FirstOrDefault(i => i.Index == plotIndex);
         }
 

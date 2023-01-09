@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using NexusForever.Shared;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
@@ -7,7 +8,10 @@ using NexusForever.WorldServer.Command.Static;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Housing;
+using NexusForever.WorldServer.Game.Housing.Static;
+using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.RBAC.Static;
+using NexusForever.WorldServer.Network.Message.Model;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -79,7 +83,9 @@ namespace NexusForever.WorldServer.Command.Handler
         [Command(Permission.HouseTeleport, "Teleport to a residence, optionally specifying a character.", "teleport")]
         public void HandleHouseTeleport(ICommandContext context,
             [Parameter("", ParameterFlags.Optional)]
-            string name)
+            string name,
+            [Parameter("", ParameterFlags.Optional)]
+            string lastName)
         {
             Player target = context.GetTargetOrInvoker<Player>();
             if (!target.CanTeleport())
@@ -88,11 +94,21 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            Residence residence = GlobalResidenceManager.Instance.GetResidenceByOwner(name ?? target.Name);
+            if (!string.IsNullOrWhiteSpace(lastName))
+            {
+                name = $"{name} {lastName}";
+            } else if (string.IsNullOrWhiteSpace(name))
+            {
+                name = target.Name;
+            }
+
+            Residence residence = GlobalResidenceManager.Instance.GetResidenceByOwner(name);
             if (residence == null)
             {
-                if (name == null)
+                if (name == target.Name)
+                {
                     residence = GlobalResidenceManager.Instance.CreateResidence(target);
+                }
                 else
                 {
                     context.SendMessage("A residence for that character doesn't exist!");
@@ -100,9 +116,219 @@ namespace NexusForever.WorldServer.Command.Handler
                 }
             }
 
+            if (residence.OwnerId != context.InvokingPlayer.CharacterId)
+            {
+                if (residence.Has18PlusLock())
+                {
+                    if (!context.InvokingPlayer.IsAdult)
+                    {
+                        context.InvokingPlayer.SendSystemMessage("This plot is currently unavailable.");
+                        return;
+                    }
+                }
+
+                switch (residence.PrivacyLevel)
+                {
+                    case ResidencePrivacyLevel.Private:
+                        {
+                            context.InvokingPlayer.SendSystemMessage("This plot is currently unavailable.");
+                            return;
+                        }
+                    // TODO: check if player is either a neighbour or roommate
+                    case ResidencePrivacyLevel.NeighborsOnly:
+                        break;
+                    case ResidencePrivacyLevel.RoommatesOnly:
+                        break;
+                }
+            }
+
             ResidenceEntrance entrance = GlobalResidenceManager.Instance.GetResidenceEntrance(residence.PropertyInfoId);
             target.Rotation = entrance.Rotation.ToEulerRadians();
             target.TeleportTo(entrance.Entry, entrance.Position, residence.Parent?.Id ?? residence.Id);
+        }
+
+        [Command(Permission.AdultPlotLockOwner, "Toggle the 18+ lock on your plot.", "nsfwlock")]
+        public void HandleHouseNSFWLock(ICommandContext context,
+            [Parameter("On, off or status")]
+            string setting)
+        {
+            Residence res = GlobalResidenceManager.GetCurrentVisitedResidence(context.InvokingPlayer);
+            bool setLock;
+            if(setting.Equals("on", StringComparison.InvariantCultureIgnoreCase))
+            {
+                setLock = true;
+            }
+            else if (setting.Equals("off", StringComparison.InvariantCultureIgnoreCase))
+            {
+                setLock = false;
+            }
+            else if (setting.Equals("status", StringComparison.InvariantCultureIgnoreCase))
+            {
+                context.SendMessage($"NSFWLock status is {(res.Has18PlusLock() ? "on" : "off")}");
+                return;
+            }
+            else
+            {
+                context.SendError("Setting was not 'on' or 'off'.");
+                return;
+            }
+            if (!res.CanModifyResidence(context.InvokingPlayer))
+            {
+                context.SendError("You can't modify the residence you're currently on.");
+                return;
+            }
+            bool result = res.Set18PlusLock(setLock);
+            if (!result)
+            {
+                context.SendError("Could not enable lock. Is there anyone on the plot that is not 18+?");
+                return;
+            }
+        }
+
+        [Command(Permission.AdultPlotLockOwner, "Set the time limit on the 18+ lock on your plot.", "nsfwtimelock")]
+        public void HandleHouseNSFWTimeLock(ICommandContext context,
+           [Parameter("How long?")]
+            string time,
+           [Parameter("Time unit (minute, hour, day, week, month)")]
+            string timeUnit)
+        {
+            DateTime lockTime = DateTime.Now;
+            string timeAmount = "";
+            if (!string.IsNullOrWhiteSpace(timeUnit))
+            {
+                if (uint.TryParse(time, out uint timeNum))
+                {
+                    switch (timeUnit.ToLowerInvariant())
+                    {
+                        case "minute":
+                        case "min":
+                        case "minutes":
+                        case "mins":
+                            lockTime = lockTime.AddMinutes(timeNum);
+                            timeAmount = $"{timeNum} {(timeNum != 1 ? "minutes" : "minute")}";
+                            break;
+                        case "hour":
+                        case "hours":
+                            lockTime = lockTime.AddHours(timeNum);
+                            timeAmount = $"{timeNum} {(timeNum != 1 ? "hours" : "hour")}";
+                            break;
+                        case "day":
+                        case "days":
+                            lockTime = lockTime.AddDays(timeNum);
+                            timeAmount = $"{timeNum} {(timeNum != 1 ? "days" : "day")}";
+                            break;
+                        case "week":
+                        case "weeks":
+                            lockTime = lockTime.AddDays(timeNum * 7);
+                            timeAmount = $"{timeNum} {(timeNum != 1 ? "weeks" : "week")}";
+                            break;
+                        case "month":
+                        case "months":
+                            lockTime = lockTime.AddMonths((int)timeNum);
+                            timeAmount = $"{timeNum} {(timeNum != 1 ? "months" : "month")}";
+                            break;
+                        default:
+                            context.SendError("Time unit not recognized, should be minute/hour/day/week/month");
+                            return;
+                    }
+                }
+                else
+                {
+                    context.SendError("Could not parse the first parameter.");
+                    return;
+                }
+            }
+            else
+            {
+                context.SendError("Time unit not defined.");
+                return;
+            }
+
+            Residence res = GlobalResidenceManager.GetCurrentVisitedResidence(context.InvokingPlayer);
+            if (!res.CanModifyResidence(context.InvokingPlayer))
+            {
+                context.SendError("You can't modify the residence you're currently on.");
+                return;
+            }
+            bool result = res.Set18PlusLock(true, lockTime, timeAmount);
+            if (!result)
+            {
+                context.SendError("Could not enable lock. Is there anyone on the plot that is not 18+?");
+                return;
+            }
+        }
+
+        [Command(Permission.HouseRemodel, "Change ground/sky.", "remodel")]
+        public void HandleRemodelCommand(ICommandContext context,
+            [Parameter("Ground, sky, music, or house plug?")]
+            string option,
+            [Parameter("ID")]
+            ushort id)
+        {
+            Player target = context.InvokingPlayer;
+            //remodel
+            ClientHousingRemodel clientRemod = new ClientHousingRemodel();
+            ResidenceMapInstance residenceMap = target.Map as ResidenceMapInstance;
+            if (residenceMap == null)
+            {
+                context.SendError("You need to be on a housing map to use this command!");
+            }
+
+            Residence residence = GlobalResidenceManager.Instance.GetResidenceByOwner(context.InvokingPlayer.Name);
+
+            if (option.ToLower() == "ground")
+            {
+                residence.Ground = id;
+            }
+            else if (option.ToLower() == "sky")
+            {
+                residence.Sky = id;
+            }
+            else if (option.ToLower() == "music")
+            {
+                residence.Music = id;
+            }
+            else if (option.ToLower() == "house")
+            {
+                var plugItem = GameTableManager.Instance.HousingPlugItem.GetEntry(id);
+                if(plugItem != null)
+                {
+                    ClientHousingPlugUpdate pu = new ClientHousingPlugUpdate
+                    {
+                        Operation = PlugUpdateOperation.Place,
+                        PlotInfo = residence.GetPlotByIndex(0).PlotInfoEntry.Id,
+                        PlugFacing = (uint)residence.GetPlotByIndex(0).PlugFacing,
+                        PlugItem = id,
+                        ResidenceId = residence.Id,
+                        RealmId = WorldServer.RealmId
+                    };
+                    residence.Map.SetPlug(target, pu);
+                    /*if (residence.SetHouse(plugItem))
+                    {
+                        residence.getMap().HandleHouseChange(target, residence.GetPlot(0));
+                    }
+                    else
+                    {
+                        context.SendError("Unknown error.");
+                        return;
+                    }*/
+                }
+                else
+                {
+                    context.SendError("Invalid housingPlugItem ID.");
+                    return;
+                }
+                return; // not a normal remodel.
+            }
+            else
+            {
+                context.SendError("You can only change the ground, sky, music, or house plug with this command.");
+            }
+            residenceMap.Remodel(new Network.Message.Model.Shared.TargetResidence
+            {
+                ResidenceId = residence.Id,
+                RealmId = WorldServer.RealmId
+            }, target, clientRemod);
         }
     }
 }
