@@ -42,8 +42,8 @@ namespace NexusForever.WorldServer.Command.Handler
         public void HandleEntitlementCommandAccountAdd(ICommandContext context,
                 [Parameter("Entitlement type to modify.", ParameterFlags.None, typeof(EnumParameterConverter<EntitlementType>))]
                 EntitlementType entitlementType,
-                [Parameter("Value to modify the entitlement.")]
-                int value)
+                [Parameter("Value to modify the entitlement.", ParameterFlags.Optional)]
+                int? value)
         {
             if (GameTableManager.Instance.Entitlement.GetEntry((ulong)entitlementType) == null)
             {
@@ -55,7 +55,7 @@ namespace NexusForever.WorldServer.Command.Handler
             if (targetPlayer != context.Invoker && !(context.Invoker as Player).Session.AccountRbacManager.HasPermission(Permission.GMFlag))
                 targetPlayer = context.Invoker as Player;
 
-            targetPlayer.Session.EntitlementManager.AddEntitlement(entitlementType, value);
+            targetPlayer.Session.EntitlementManager.AddEntitlement(entitlementType, value ?? 1);
         }
     }
 }

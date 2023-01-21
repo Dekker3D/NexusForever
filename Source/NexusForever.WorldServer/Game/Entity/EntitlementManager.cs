@@ -46,6 +46,13 @@ namespace NexusForever.WorldServer.Game.Entity
                 AddEntitlement(EntitlementType.CanPurchasePromotionToken, 1);
 
             UpdateRewardPropertiesPremiumModifiers(false);
+
+            SetMinimumCharacterEntitlement(EntitlementType.CostumeSlots, 8, model.Id);
+            SetMinimumAccountEntitlement(EntitlementType.ChuaWarriorUnlock, 1, model.Id);
+            SetMinimumAccountEntitlement(EntitlementType.AurinEngineerUnlock, 1, model.Id);
+            SetMinimumAccountEntitlement(EntitlementType.BaseCharacterSlots, 48, model.Id);
+            SetMinimumAccountEntitlement(EntitlementType.FullGuildsAccess, 1, model.Id);
+            SetMinimumAccountEntitlement(EntitlementType.GuildsAccess, 1, model.Id);
         }
 
         public void Save(AuthContext context)
@@ -107,16 +114,9 @@ namespace NexusForever.WorldServer.Game.Entity
                 var entitlement = new CharacterEntitlement(entitlementModel, entry);
                 characterEntitlements.Add(entitlement.Type, entitlement);
             }
-
-            SetMinimumEntitlement(EntitlementType.CostumeSlots, 8, model.Id);
-            SetMinimumEntitlement(EntitlementType.ChuaWarriorUnlock, 1, model.Id);
-            SetMinimumEntitlement(EntitlementType.AurinEngineerUnlock, 1, model.Id);
-            SetMinimumEntitlement(EntitlementType.BaseCharacterSlots, 48, model.Id);
-            SetMinimumEntitlement(EntitlementType.FullGuildsAccess, 1, model.Id);
-            SetMinimumEntitlement(EntitlementType.GuildsAccess, 1, model.Id);
         }
 
-        private void SetMinimumEntitlement(EntitlementType type, uint amount, ulong characterId)
+        private void SetMinimumCharacterEntitlement(EntitlementType type, uint amount, ulong characterId)
         {
             if (characterEntitlements.TryGetValue(type, out CharacterEntitlement entitlement))
             {
@@ -125,6 +125,18 @@ namespace NexusForever.WorldServer.Game.Entity
             else
             {
                 characterEntitlements.Add(type, new CharacterEntitlement(characterId, GameTableManager.Instance.Entitlement.GetEntry((uint)type), amount));
+            }
+        }
+
+        private void SetMinimumAccountEntitlement(EntitlementType type, uint amount, uint accountId)
+        {
+            if (accountEntitlements.TryGetValue(type, out AccountEntitlement entitlement))
+            {
+                entitlement.Amount = Math.Max(amount, entitlement.Amount);
+            }
+            else
+            {
+                accountEntitlements.Add(type, new AccountEntitlement(accountId, GameTableManager.Instance.Entitlement.GetEntry((uint)type), amount));
             }
         }
 
