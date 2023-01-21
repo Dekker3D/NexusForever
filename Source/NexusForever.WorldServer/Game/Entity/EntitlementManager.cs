@@ -108,13 +108,23 @@ namespace NexusForever.WorldServer.Game.Entity
                 characterEntitlements.Add(entitlement.Type, entitlement);
             }
 
-            if(characterEntitlements.TryGetValue(EntitlementType.CostumeSlots, out CharacterEntitlement costumeSlots))
+            SetMinimumEntitlement(EntitlementType.CostumeSlots, 8, model.Id);
+            SetMinimumEntitlement(EntitlementType.ChuaWarriorUnlock, 1, model.Id);
+            SetMinimumEntitlement(EntitlementType.AurinEngineerUnlock, 1, model.Id);
+            SetMinimumEntitlement(EntitlementType.BaseCharacterSlots, 48, model.Id);
+            SetMinimumEntitlement(EntitlementType.FullGuildsAccess, 1, model.Id);
+            SetMinimumEntitlement(EntitlementType.GuildsAccess, 1, model.Id);
+        }
+
+        private void SetMinimumEntitlement(EntitlementType type, uint amount, ulong characterId)
+        {
+            if (characterEntitlements.TryGetValue(type, out CharacterEntitlement entitlement))
             {
-                costumeSlots.Amount = 8;
+                entitlement.Amount = Math.Max(amount, entitlement.Amount);
             }
             else
             {
-                characterEntitlements.Add(EntitlementType.CostumeSlots, new CharacterEntitlement(model.Id, GameTableManager.Instance.Entitlement.GetEntry((uint) EntitlementType.CostumeSlots), 8));
+                characterEntitlements.Add(type, new CharacterEntitlement(characterId, GameTableManager.Instance.Entitlement.GetEntry((uint)type), amount));
             }
         }
 
@@ -125,7 +135,7 @@ namespace NexusForever.WorldServer.Game.Entity
             // TODO: load from DB? Might be useful for custom
             UpdateRewardPropertiesPremiumModifiers(true);
 
-            UpdateRewardProperty(RewardPropertyType.ExtraDecorSlots, 5000);
+            UpdateRewardProperty(RewardPropertyType.ExtraDecorSlots, 10000);
             UpdateRewardProperty(RewardPropertyType.GuildCreateOrInviteAccess, 1);
             UpdateRewardProperty(RewardPropertyType.GuildHolomarkUnlimited, 1);
             UpdateRewardProperty(RewardPropertyType.BagSlots, 4);
