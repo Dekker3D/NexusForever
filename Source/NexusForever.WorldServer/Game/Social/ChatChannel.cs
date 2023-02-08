@@ -635,9 +635,9 @@ namespace NexusForever.WorldServer.Game.Social
             if (member.HasFlag(ChatChannelMemberFlags.Muted))
                 return ChatResult.NoSpeaking;
 
-            if (!TextFilterManager.Instance.IsTextValid(text)
+            /*if (!TextFilterManager.Instance.IsTextValid(text)
                 || !TextFilterManager.Instance.IsTextValid(text, UserText.Chat))
-                return ChatResult.InvalidMessageText;
+                return ChatResult.InvalidMessageText;*/ // lol no fuck this filter.
 
             return ChatResult.Ok;
         }
