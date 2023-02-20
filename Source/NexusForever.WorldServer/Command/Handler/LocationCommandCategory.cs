@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using NexusForever.Database.Auth.Migrations;
 using NexusForever.Shared;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
@@ -25,8 +26,10 @@ namespace NexusForever.WorldServer.Command.Handler
             float z = context.InvokingPlayer.Position.Z;
             uint zoneId = context.InvokingPlayer.Zone.Id;
             uint mapId = context.InvokingPlayer.Map.Entry.Id;
+            var map = context.InvokingPlayer.Map as Game.Map.MapInstance;
+            ulong? instanceID = map?.InstanceId ?? null;
             string teleportCommand = $"!teleport coordinates {x} {y} {z} {mapId}";
-            context.SendMessage($"Your current location:\n      X:{x}, Y:{y}, Z:{z}\n     World Map ID: {mapId}\n     Zone ID: {zoneId}\n     {teleportCommand}");
+            context.SendMessage($"Your current location:\n      X:{x}, Y:{y}, Z:{z}\n     World Map ID: {mapId}\n     Zone ID: {zoneId}\n     Instance ID: {instanceID ?? 0}\n     {teleportCommand}");
         }
     }
 }

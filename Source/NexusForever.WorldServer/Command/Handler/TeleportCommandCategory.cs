@@ -7,6 +7,7 @@ using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Command.Context;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Entity;
+using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.RBAC.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
@@ -24,7 +25,9 @@ namespace NexusForever.WorldServer.Command.Handler
             [Parameter("Z coordinate for target teleport position.")]
             float z,
             [Parameter("Optional world id for target teleport position.")]
-            ushort? worldId)
+            ushort? worldId,
+            [Parameter("Optional instance id for target teleport position.")]
+            ulong? instanceId)
         {
             Player target = context.GetTargetOrInvoker<Player>();
             if (target != context.Invoker)
@@ -37,8 +40,12 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
+            if (worldId == null && instanceId == null && target.Map is MapInstance)
+            {
+                instanceId = (target.Map as MapInstance).InstanceId;
+            }
             worldId ??= (ushort)target.Map.Entry.Id;
-            target.TeleportTo(worldId.Value, x, y, z);
+            target.TeleportTo(worldId.Value, x, y, z, instanceId);
         }
 
         [Command(Permission.TeleportLocation, "Teleport to the specified world location.", "location")]
