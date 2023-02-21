@@ -68,7 +68,7 @@ namespace NexusForever.WorldServer.Game.Map
 
             foreach (Plot plot in residence.GetPlots()
                 .Where(p => p.PlugItemEntry != null))
-                plot?.PlugEntity.RemoveFromMap();
+                plot?.PlugEntity?.RemoveFromMap();
         }
 
         protected override MapPosition GetPlayerReturnLocation(Player player)
@@ -315,13 +315,34 @@ namespace NexusForever.WorldServer.Game.Map
                 switch (housingDecorUpdate.Operation)
                 {
                     case DecorUpdateOperation.Create:
-                        DecorCreate(residence, player, update);
+                        try
+                        {
+                            DecorCreate(residence, player, update);
+                        }
+                        catch (Exception e)
+                        {
+                            player.SendSystemMessage("Error creating decor! Try reloading your map with /c house teleport.");
+                        } // No fucks given, continue!
                         break;
                     case DecorUpdateOperation.Move:
-                        DecorMove(residence, player, update);
+                        try
+                        {
+                            DecorMove(residence, player, update);
+                        }
+                                catch (Exception e)
+                        {
+                            player.SendSystemMessage("Moved decor does not exist! Try reloading your map with /c house teleport.");
+                        } // No fucks given, continue!
                         break;
                     case DecorUpdateOperation.Delete:
-                        DecorDelete(residence, update);
+                        try
+                        {
+                            DecorDelete(residence, update);
+                        }
+                                    catch (Exception e)
+                        {
+                            player.SendSystemMessage("Deleted decor does not exist! Try reloading your map with /c house teleport.");
+                        } // No fucks given, continue!
                         break;
                     default:
                         throw new InvalidPacketValueException();
@@ -400,6 +421,7 @@ namespace NexusForever.WorldServer.Game.Map
 
             Decor decor = residence.DecorCreate(entry);
             decor.Type = update.DecorType;
+            decor.PlotIndex = update.PlotIndex;
 
             if (update.ColourShiftId != decor.ColourShiftId)
             {
@@ -421,8 +443,7 @@ namespace NexusForever.WorldServer.Game.Map
                 // new decor is being placed directly in the world
                 decor.Position = update.Position;
                 decor.Rotation = update.Rotation;
-                decor.Scale = update.Scale;
-                decor.PlotIndex = update.PlotIndex;
+                decor.Scale    = update.Scale;
             }
 
             SendDecorUpdate(decor);
@@ -476,11 +497,6 @@ namespace NexusForever.WorldServer.Game.Map
 
                 if (decor.Type == DecorType.Crate)
                 {
-                    if (decor.Entry.Creature2IdActiveProp != 0u)
-                    {
-                        // TODO: used for decor that have an associated entity
-                    }
-
                     // crate->world
                     decor.Move(update.DecorType, update.Position, update.Rotation, update.Scale);
                 }
