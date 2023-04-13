@@ -19,7 +19,10 @@ namespace NexusForever.WorldServer.Game.Housing
         public ulong DecorId { get; }
         public Residence Residence { get; protected set; }
         public HousingDecorInfoEntry Entry { get; protected set; }
-        public WorldEntity Entity { get; private set; }
+        public WorldEntity Entity {
+            get;
+            private set;
+        }
 
         public DecorType Type
         {
@@ -357,11 +360,7 @@ namespace NexusForever.WorldServer.Game.Housing
             Move(DecorType.Crate, Vector3.Zero, Quaternion.Identity, 0f);
             DecorParentId = 0u;
 
-            if (Entity != null)
-                MapManager.Instance.GetResidenceMapInstance(Residence.Id)?.EnqueueToAll(new ServerEntityDestroy
-                {
-                    Guid = Entity.Guid
-                });
+            RemoveEntity();
         }
 
         public ServerHousingResidenceDecor.Decor Build()
@@ -386,10 +385,27 @@ namespace NexusForever.WorldServer.Game.Housing
 
         public void SetEntity(WorldEntity entity)
         {
+            if (entity == null)
+            {
+                RemoveEntity();
+                return;
+            }
             if (Entity != null && entity != null)
                 throw new InvalidOperationException($"Cannot add an Entity to this Decor when an Entity already exists.");
 
             Entity = entity;
+        }
+
+        public void RemoveEntity()
+        {
+            if (Entity != null)
+            {
+                MapManager.Instance.GetResidenceMapInstance(Residence.Id)?.EnqueueToAll(new ServerEntityDestroy
+                {
+                    Guid = Entity.Guid
+                });
+                Entity = null;
+            }
         }
     }
 }
