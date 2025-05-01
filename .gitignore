@@ -336,3 +336,6 @@ ASALocalRun/
 
 # Visual Studio profiling session file
 *.diagsession
+
+# Windows file links (convenience)
+*.lnk
