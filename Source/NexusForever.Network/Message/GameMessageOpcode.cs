@@ -238,7 +238,7 @@ namespace NexusForever.Network.Message
         ServerFriendAccountCharacterZoneChanged = 0x03A4,
         ServerFriendshipIgnoreStrangersState = 0x03A5,
         ServerFriendAccountPersonalStatus = 0x03A6,
-        ClientFriendAccountPersonsalPresenceChange = 0x03A7,
+        ClientFriendAccountPersonalPresenceChange = 0x03A7,
         ServerFriendAccountPresenceUpdate = 0x03AA,
         ClientFriendAccountSetPublicNote = 0x03AC,
         ServerFriendAccountPublicNote   = 0x03AD,

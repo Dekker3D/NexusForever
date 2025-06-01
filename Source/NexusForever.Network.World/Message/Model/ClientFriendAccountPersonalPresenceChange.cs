@@ -3,8 +3,8 @@ using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model
 {
-    [Message(GameMessageOpcode.ClientFriendAccountPersonsalPresenceChange)]
-    public class ClientFriendAccountPersonsalStatusChange : IReadable
+    [Message(GameMessageOpcode.ClientFriendAccountPersonalPresenceChange)]
+    public class ClientFriendAccountPersonalStatusChange : IReadable
     {
         public AccountPresenceState Presence { get; private set; }
 
