@@ -1,6 +1,5 @@
-﻿using NexusForever.Game.Static.Friend;
+﻿using NexusForever.Game.Static.Contact;
 using NexusForever.Network.Message;
-using NexusForever.Network.World.Message.Model.Shared;
 
 namespace NexusForever.Network.World.Message.Model
 {
@@ -9,7 +8,7 @@ namespace NexusForever.Network.World.Message.Model
     {
         public string Name { get; private set; }
         public string RealmName { get; set; }
-        public FriendshipType Type { get; set; }
+        public ContactType Type { get; set; }
         public string Note { get; set; } // Optional note sent with invite
 
         public void Write(GamePacketWriter writer)

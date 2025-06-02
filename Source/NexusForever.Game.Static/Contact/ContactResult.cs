@@ -1,6 +1,6 @@
-﻿namespace NexusForever.Game.Static.Friend
+﻿namespace NexusForever.Game.Static.Contact
 {
-    public enum FriendshipResult
+    public enum ContactResult
     {
         Ok = -1,                    // Used by the Server (not understood by the client)
         PlayerNotFound,             // Invite canceled: No such player

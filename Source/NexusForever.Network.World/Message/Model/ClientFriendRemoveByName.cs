@@ -1,4 +1,4 @@
-﻿using NexusForever.Game.Static.Friend;
+﻿using NexusForever.Game.Static.Contact;
 using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model
@@ -8,13 +8,13 @@ namespace NexusForever.Network.World.Message.Model
     {
         public string Name { get; private set; }
         public string RealmName { get; private set; }
-        public FriendshipType Type { get; private set; }
+        public ContactType Type { get; private set; }
 
         public void Read(GamePacketReader reader)
         {
             Name = reader.ReadWideString();
             RealmName = reader.ReadWideString();
-            Type = reader.ReadEnum<FriendshipType>(4u);
+            Type = reader.ReadEnum<ContactType>(4u);
         }
     }
 }

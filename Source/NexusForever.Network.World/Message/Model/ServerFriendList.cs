@@ -6,12 +6,12 @@ namespace NexusForever.Network.World.Message.Model
     [Message(GameMessageOpcode.ServerFriendList)]
     public class ServerFriendList : IWritable
     {
-        public List<FriendData> Friends { get; set; } = [];
+        public List<FriendData> Contacts { get; set; } = [];
 
         public void Write(GamePacketWriter writer)
         {
-            writer.Write(Friends.Count, 16u);
-            Friends.ForEach(f => f.Write(writer));
+            writer.Write(Contacts.Count, 16u);
+            Contacts.ForEach(f => f.Write(writer));
         }
     }
 }

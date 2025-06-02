@@ -1,4 +1,4 @@
-﻿using NexusForever.Game.Static.Friend;
+﻿using NexusForever.Game.Static.Contact;
 using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model
@@ -9,7 +9,7 @@ namespace NexusForever.Network.World.Message.Model
         public class FriendAccountInviteInfo : IWritable
         {
             public ulong AccountFriendInviteId { get; set; }
-            public FriendshipType Type { get; set; }
+            public ContactType Type { get; set; }
             public string DisplayName { get; set; }
             public string Note { get; set; }
             public float DaysUntilExpired { get; set; }

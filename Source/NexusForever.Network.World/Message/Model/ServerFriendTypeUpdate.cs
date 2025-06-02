@@ -1,4 +1,4 @@
-using NexusForever.Game.Static.Friend;
+using NexusForever.Game.Static.Contact;
 using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model
@@ -7,7 +7,7 @@ namespace NexusForever.Network.World.Message.Model
     public class ServerFriendTypeUpdate : IWritable
     {
         public ulong FriendshipId { get; set; }
-        public FriendshipType Type { get; set; }
+        public ContactType Type { get; set; }
 
         public void Write(GamePacketWriter writer)
         {

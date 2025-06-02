@@ -221,6 +221,7 @@ namespace NexusForever.Game.Entity
         public IReputationManager ReputationManager { get; private set; }
         public IGuildManager GuildManager { get; private set; }
         public IChatManager ChatManager { get; private set; }
+        public IContactManager ContactManager { get; private set; }
         public IResidenceManager ResidenceManager { get; private set; }
         public ICinematicManager CinematicManager { get; private set; }
         public ICharacterEntitlementManager EntitlementManager { get; private set; }

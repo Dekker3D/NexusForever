@@ -1,4 +1,4 @@
-using NexusForever.Game.Static.Friend;
+using NexusForever.Game.Static.Contact;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model.Shared;
 
@@ -8,12 +8,12 @@ namespace NexusForever.Network.World.Message.Model
     public class ClientFriendRemoveByIdentity : IReadable
     {
         public TargetPlayerIdentity PlayerIdentity { get; private set; } = new();
-        public FriendshipType Type { get; private set; }
+        public ContactType Type { get; private set; }
 
         public void Read(GamePacketReader reader)
         {
             PlayerIdentity.Read(reader);
-            Type = reader.ReadEnum<FriendshipType>(4u);
+            Type = reader.ReadEnum<ContactType>(4u);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace NexusForever.Game.Static.Friend
+﻿namespace NexusForever.Game.Static.Contact
 {
-    public enum FriendshipType
+    public enum ContactType
     {
         Friend = 0,
         Ignore = 1,

@@ -1,3 +1,4 @@
+using NexusForever.Game.Static.Contact;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model.Shared;
@@ -11,7 +12,7 @@ namespace NexusForever.Network.World.Message.Model
         {
             public ulong InviteId { get; set; }
             public TargetPlayerIdentity PlayerIdentity { get; set; }
-            public uint Seen { get; set; }
+            public ContactType ContactType { get; set; }
             public float ExpiryInDays { get; set; }
             public string Note { get; set; }
             public string Name { get; set; }
@@ -23,7 +24,7 @@ namespace NexusForever.Network.World.Message.Model
             {
                 writer.Write(InviteId);
                 PlayerIdentity.Write(writer);
-                writer.Write(Seen, 3u);
+                writer.Write(ContactType, 3u);
                 writer.Write(ExpiryInDays);
                 writer.WriteStringWide(Note);
                 writer.WriteStringWide(Name);

@@ -82,6 +82,7 @@ namespace NexusForever.Game.Abstract.Entity
         IReputationManager ReputationManager { get; }
         IGuildManager GuildManager { get; }
         IChatManager ChatManager { get; }
+        IContactManager ContactManager { get; }
         IResidenceManager ResidenceManager { get; }
         ICinematicManager CinematicManager { get; }
         ICharacterEntitlementManager EntitlementManager { get; }

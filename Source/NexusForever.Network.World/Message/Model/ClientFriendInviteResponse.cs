@@ -1,4 +1,4 @@
-using NexusForever.Game.Static.Friend;
+using NexusForever.Game.Static.Contact;
 using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model
@@ -7,12 +7,12 @@ namespace NexusForever.Network.World.Message.Model
     public class ClientFriendInviteResponse : IReadable
     {
         public ulong InviteId { get; private set; }
-        public FriendshipResponse Response { get; private set; }
+        public ContactResponse Response { get; private set; }
 
         public void Read(GamePacketReader reader)
         {
             InviteId = reader.ReadULong();
-            Response  = reader.ReadEnum<FriendshipResponse>(3u);
+            Response  = reader.ReadEnum<ContactResponse>(3u);
         }
     }
 }
